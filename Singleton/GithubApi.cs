@@ -46,7 +46,6 @@ namespace ProjectList.Singleton
 
         private GithubApi()
         {
-
             // Default init delegate
             OnUserInfoReady = (_sender, _user) => { };
             OnUserDisconnect = (_sender, _e) => { };

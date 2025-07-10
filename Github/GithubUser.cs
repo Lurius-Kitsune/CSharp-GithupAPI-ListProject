@@ -1,4 +1,8 @@
-﻿using System.Text.Json.Serialization;
+﻿using ProjectList.Singleton;
+using System.Net.Http.Headers;
+using System.Numerics;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace ProjectList.Github
 {
@@ -23,6 +27,12 @@ namespace ProjectList.Github
         [JsonIgnore]
         public Image? AvatarImage => avatarImage;
 
+        [JsonIgnore]
+        Vector<Repository> repositories = new Vector<Repository>();
+
+        [JsonIgnore]
+        public Vector<Repository> Repositories { get => repositories; private set => repositories = value; }
+
         public GithubUser()
         {
             avatarImage = null;
@@ -46,5 +56,35 @@ namespace ProjectList.Github
                 avatarImage = Image.FromStream(stream);
             }
         }
+
+        public async Task<Vector<Repository>> FetchRepositoriesAsync(string token)
+        {
+            if (string.IsNullOrEmpty(UserUrl))
+                return new Vector<Repository>();
+
+            using HttpClient _client = new HttpClient();
+
+            _client.DefaultRequestHeaders.Accept.Clear();
+            _client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/vnd.github+json"));
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", GithubApi.Instance.AccessToken);
+            _client.DefaultRequestHeaders.Add("X-GitHub-Api-Version", "2022-11-28");
+            _client.DefaultRequestHeaders.Add("User-Agent", "ProjectListApp");
+
+            HttpResponseMessage _response = await _client.GetAsync($"{UserUrl}/repos");
+            if (!_response.IsSuccessStatusCode)
+                return new Vector<Repository>();
+
+            string _content = await _response.Content.ReadAsStringAsync();
+
+            Vector<Repository>? _repositories = JsonSerializer.Deserialize<Vector<Repository>>(_content);
+
+            if (_repositories != null)
+            {
+                Repositories = _repositories;
+            }
+
+            return Repositories;
+        }
+
     }
 }

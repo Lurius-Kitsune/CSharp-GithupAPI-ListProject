@@ -5,14 +5,15 @@ using System.Diagnostics;
 
 namespace ProjectList
 {
-    public partial class Form1 : Form
+    public partial class AppMainForm : Form
     {
         GithubApi githubApi;
 
-        private Form1()
+        private AppMainForm()
         {
             InitializeComponent();
             Load += OnFormLoad;
+            githubApi = GithubApi.Instance;
         }
 
         private void OnFormLoad(object? _sender, EventArgs _e)
@@ -32,7 +33,7 @@ namespace ProjectList
             UpdateUserInfoUI(githubApi.UserInfo);
         }
 
-        public Form1(GithubApi _githubApi) : this()
+        public AppMainForm(GithubApi _githubApi) : this()
         {
             this.githubApi = _githubApi;
             if (!DataManager.Instance.IsAccessTokenPresent())
@@ -64,5 +65,8 @@ namespace ProjectList
             usernameInfo.Text = _user.UserName == null ? "" : _user.UserName;
         }
 
+        private void vScrollBar1_Scroll(object sender, ScrollEventArgs e)
+        {
+                    }
     }
 }
