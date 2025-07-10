@@ -15,4 +15,49 @@ jobs:
     runs-on: windows-latest
 
     env:
-      Solution_Name: P_
+      Solution_Name: ProjectList.sln
+      Project_Path: ProjectList\ProjectList.csproj
+      Output_Dir: ProjectList\bin\${{ matrix.configuration }}\net8.0-windows
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Install .NET 8 SDK
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 8.0.x
+
+    - name: Setup MSBuild
+      uses: microsoft/setup-msbuild@v2
+
+    - name: Execute unit tests
+      run: dotnet test
+
+    - name: Restore solution
+      run: msbuild $env:Solution_Name /t:Restore /p:Configuration=$env:Configuration
+      env:
+        Configuration: ${{ matrix.configuration }}
+
+    - name: Decode PFX certificate (if available)
+      if: ${{ secrets.PFX_CERTIFICATE != '' }}
+      run: |
+        $certBytes = [System.Convert]::FromBase64String("${{ secrets.PFX_CERTIFICATE }}")
+        [System.IO.File]::WriteAllBytes("signing.pfx", $certBytes)
+
+    - name: Build and sign project
+      run: |
+        msbuild $env:Project_Path /p:Configuration=$env:Configuration `
+          /p:SignAssembly=true `
+          /p:AssemblyOriginatorKeyFile=signing.pfx `
+          /p:PackageCertificatePassword=${{ secrets.Pfx_Key }}
+      env:
+        Configuration: ${{ matrix.configuration }}
+
+    - name: Upload built executable
+      uses: actions/upload-artifact@v4
+      with:
+        name: ProjectList-${{ matrix.configuration }}-exe
+        path: ${{ env.Output_Dir }}\ProjectList.exe
