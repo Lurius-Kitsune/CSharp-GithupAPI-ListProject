@@ -40,10 +40,9 @@ jobs:
       run: msbuild ${{ env.Solution_Name }} /t:Restore /p:Configuration=${{ matrix.configuration }}
 
     - name: Decode PFX certificate (if available)
-      if: ${{ secrets.PFX_CERTIFICATE != '' }}
       shell: pwsh
       run: |
-        $certBytes = [System.Convert]::FromBase64String("${{ secrets.PFX_CERTIFICATE }}")
+        $certBytes = [System.Convert]::FromBase64String("\${{ secrets.PFX_CERTIFICATE }}")
         [System.IO.File]::WriteAllBytes("signing.pfx", $certBytes)
 
     - name: Build and sign project
