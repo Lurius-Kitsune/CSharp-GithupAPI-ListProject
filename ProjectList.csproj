@@ -7,7 +7,7 @@
     <UseWindowsForms>true</UseWindowsForms>
     <ImplicitUsings>enable</ImplicitUsings>
 	  <SignAssembly>true</SignAssembly>
-	  <AssemblyOriginatorKeyFile>GitHubActionsWorkflow.pfx</AssemblyOriginatorKeyFile>
+	  <AssemblyOriginatorKeyFile>signing.pfx</AssemblyOriginatorKeyFile>
   </PropertyGroup>
 
   <ItemGroup>
