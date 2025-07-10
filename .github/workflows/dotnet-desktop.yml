@@ -16,8 +16,8 @@ jobs:
 
     env:
       Solution_Name: ProjectList.sln
-      Project_Path: ProjectList/ProjectList.csproj
-      Output_Dir: ProjectList/bin/${{ matrix.configuration }}/net8.0-windows
+      Project_Path: ProjectList.csproj
+      Output_Dir: bin/${{ matrix.configuration }}/net8.0-windows
 
     steps:
     - name: Checkout
