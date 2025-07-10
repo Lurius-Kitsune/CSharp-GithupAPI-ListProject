@@ -48,8 +48,11 @@ jobs:
     - name: Import certificate to Strong Name CSP
       shell: pwsh
       run: |
-        $cert = New-Object System.Security.Cryptography.X509Certificates.X509Certificate2
-        $cert.Import("signing.pfx", "${{ secrets.PFX_PASSWORD }}", "Exportable,PersistKeySet")
+        $cert = New-Object System.Security.Cryptography.X509Certificates.X509Certificate2("signing.pfx", "${{ secrets.PFX_PASSWORD }}", "Exportable,PersistKeySet")
+        $store = New-Object System.Security.Cryptography.X509Certificates.X509Store("My", "CurrentUser")
+        $store.Open("ReadWrite")
+        $store.Add($cert)
+        $store.Close()
 
     - name: Build and sign project
       shell: pwsh

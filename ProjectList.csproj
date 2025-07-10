@@ -6,8 +6,8 @@
     <Nullable>enable</Nullable>
     <UseWindowsForms>true</UseWindowsForms>
     <ImplicitUsings>enable</ImplicitUsings>
-	  <SignAssembly>true</SignAssembly>
-	  <AssemblyOriginatorKeyFile>signing.pfx</AssemblyOriginatorKeyFile>
+	<SignAssembly Condition="Exists('signing.pfx')">true</SignAssembly>
+	<AssemblyOriginatorKeyFile Condition="Exists('signing.pfx')">signing.pfx</AssemblyOriginatorKeyFile>
   </PropertyGroup>
 
   <ItemGroup>
