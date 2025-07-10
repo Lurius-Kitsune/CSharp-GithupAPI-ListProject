@@ -42,7 +42,7 @@ jobs:
     - name: Decode PFX certificate (if available)
       shell: pwsh
       run: |
-        $certBytes = [System.Convert]::FromBase64String("\${{ secrets.PFX_CERTIFICATE }}")
+        $certBytes = [System.Convert]::FromBase64String("${{ secrets.PFX_CERTIFICATE }}")
         [System.IO.File]::WriteAllBytes("signing.pfx", $certBytes)
 
     - name: Build and sign project
