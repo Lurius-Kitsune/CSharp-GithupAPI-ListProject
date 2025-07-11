@@ -14,15 +14,16 @@ namespace ProjectList.Singleton
         string accessToken;
         string clientId; // Replace with your actual client ID  
 
-        volatile GithubUser userInfo;
+        private volatile GithubUser userInfo;
 
         public event EventHandler<string> OnTokenReceived;
         public event EventHandler<string> OnDeviceCodeReceived;
         public event EventHandler<GithubUser> OnUserInfoReady;
         public event EventHandler OnUserDisconnect;
 
-        static GithubApi? instance;
+        private static GithubApi? instance;
         private HttpClient client = new HttpClient();
+        private Form1 myApp;
 
         #region Attribute
         public static GithubApi Instance
@@ -42,6 +43,7 @@ namespace ProjectList.Singleton
             return !string.IsNullOrEmpty(AccessToken);
         }
         public GithubUser UserInfo { get => userInfo; private set => userInfo = value; }
+        public Form1 MyApp { get => myApp; set => myApp = value; }
         #endregion
 
         private GithubApi()
@@ -66,6 +68,8 @@ namespace ProjectList.Singleton
                 AccessToken = _token;
                 DataManager.Instance.UpdateGithubApiAccessToken(AccessToken);
             };
+
+            client.BaseAddress = new Uri("https://github.com/");
 
         }
 
@@ -123,7 +127,6 @@ namespace ProjectList.Singleton
                 // Catch device code  using deviceflow
                 if (string.IsNullOrEmpty(clientId)) throw new InvalidOperationException("GitHub client ID is not set. Please set the environment variable CLIENT_ID.");
 
-                client.BaseAddress = new Uri("https://github.com/");
                 client.DefaultRequestHeaders.Accept.Clear();
                 client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                 HttpContent _content = new FormUrlEncodedContent(new[]
@@ -151,6 +154,7 @@ namespace ProjectList.Singleton
                 }
 
                 OnDeviceCodeReceived?.Invoke(this, _userCode);
+                
 
                 // Attempt to start the process to open the URL
                 ProcessStartInfo _startInfo = new ProcessStartInfo
@@ -162,7 +166,7 @@ namespace ProjectList.Singleton
 
                 await Task.Delay(_interval * 1000);
 
-                while(true)
+                while(!myApp.IsAuthCancelled)
                 {
                     await Task.Delay(_interval * 1000);
                     var _tokenResponse = await client.PostAsync(

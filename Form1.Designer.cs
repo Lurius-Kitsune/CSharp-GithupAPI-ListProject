@@ -37,14 +37,15 @@ namespace ProjectList
             usernameInfo = new Label();
             tabControl1 = new TabControl();
             tabPage1 = new TabPage();
-            panel1 = new Panel();
             connectionCode = new Label();
             tabPage2 = new TabPage();
+            flowLayoutPanel2 = new FlowLayoutPanel();
+            button1 = new Button();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
             flowLayoutPanel1.SuspendLayout();
             tabControl1.SuspendLayout();
             tabPage1.SuspendLayout();
-            panel1.SuspendLayout();
+            flowLayoutPanel2.SuspendLayout();
             SuspendLayout();
             // 
             // textBox1
@@ -76,7 +77,7 @@ namespace ProjectList
             pictureBox1.BackgroundImageLayout = ImageLayout.None;
             pictureBox1.Image = Properties.Resources.image;
             pictureBox1.InitialImage = Properties.Resources.image;
-            pictureBox1.Location = new Point(0, 3);
+            pictureBox1.Location = new Point(6, 6);
             pictureBox1.Name = "pictureBox1";
             pictureBox1.Size = new Size(139, 139);
             pictureBox1.SizeMode = PictureBoxSizeMode.StretchImage;
@@ -89,17 +90,17 @@ namespace ProjectList
             flowLayoutPanel1.AutoSize = true;
             flowLayoutPanel1.Controls.Add(textBox1);
             flowLayoutPanel1.Controls.Add(connectionButton);
-            flowLayoutPanel1.Location = new Point(142, 111);
+            flowLayoutPanel1.Location = new Point(152, 97);
             flowLayoutPanel1.Margin = new Padding(0);
             flowLayoutPanel1.Name = "flowLayoutPanel1";
-            flowLayoutPanel1.Size = new Size(410, 31);
+            flowLayoutPanel1.Size = new Size(638, 31);
             flowLayoutPanel1.TabIndex = 3;
             // 
             // usernameInfo
             // 
             usernameInfo.AutoSize = true;
             usernameInfo.Font = new Font("Comic Sans MS", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            usernameInfo.Location = new Point(142, 3);
+            usernameInfo.Location = new Point(148, 6);
             usernameInfo.Margin = new Padding(0);
             usernameInfo.Name = "usernameInfo";
             usernameInfo.Size = new Size(210, 23);
@@ -119,7 +120,10 @@ namespace ProjectList
             // 
             // tabPage1
             // 
-            tabPage1.Controls.Add(panel1);
+            tabPage1.Controls.Add(flowLayoutPanel2);
+            tabPage1.Controls.Add(flowLayoutPanel1);
+            tabPage1.Controls.Add(usernameInfo);
+            tabPage1.Controls.Add(pictureBox1);
             tabPage1.Location = new Point(4, 24);
             tabPage1.Name = "tabPage1";
             tabPage1.Padding = new Padding(3);
@@ -128,23 +132,11 @@ namespace ProjectList
             tabPage1.Text = "tabPage1";
             tabPage1.UseVisualStyleBackColor = true;
             // 
-            // panel1
-            // 
-            panel1.AutoSize = true;
-            panel1.Controls.Add(connectionCode);
-            panel1.Controls.Add(usernameInfo);
-            panel1.Controls.Add(flowLayoutPanel1);
-            panel1.Controls.Add(pictureBox1);
-            panel1.Location = new Point(3, 6);
-            panel1.Name = "panel1";
-            panel1.Size = new Size(787, 151);
-            panel1.TabIndex = 4;
-            // 
             // connectionCode
             // 
             connectionCode.AutoSize = true;
             connectionCode.Font = new Font("Comic Sans MS", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            connectionCode.Location = new Point(145, 59);
+            connectionCode.Location = new Point(81, 0);
             connectionCode.Margin = new Padding(0);
             connectionCode.Name = "connectionCode";
             connectionCode.Size = new Size(169, 23);
@@ -162,6 +154,26 @@ namespace ProjectList
             tabPage2.Text = "tabPage2";
             tabPage2.UseVisualStyleBackColor = true;
             // 
+            // flowLayoutPanel2
+            // 
+            flowLayoutPanel2.AutoSize = true;
+            flowLayoutPanel2.Controls.Add(button1);
+            flowLayoutPanel2.Controls.Add(connectionCode);
+            flowLayoutPanel2.Location = new Point(152, 66);
+            flowLayoutPanel2.Margin = new Padding(0);
+            flowLayoutPanel2.Name = "flowLayoutPanel2";
+            flowLayoutPanel2.Size = new Size(638, 31);
+            flowLayoutPanel2.TabIndex = 5;
+            // 
+            // button1
+            // 
+            button1.Location = new Point(3, 3);
+            button1.Name = "button1";
+            button1.Size = new Size(75, 23);
+            button1.TabIndex = 5;
+            button1.Text = "button1";
+            button1.UseVisualStyleBackColor = true;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -176,8 +188,8 @@ namespace ProjectList
             tabControl1.ResumeLayout(false);
             tabPage1.ResumeLayout(false);
             tabPage1.PerformLayout();
-            panel1.ResumeLayout(false);
-            panel1.PerformLayout();
+            flowLayoutPanel2.ResumeLayout(false);
+            flowLayoutPanel2.PerformLayout();
             ResumeLayout(false);
         }
 
@@ -191,7 +203,8 @@ namespace ProjectList
         private TabControl tabControl1;
         private TabPage tabPage1;
         private TabPage tabPage2;
-        private Panel panel1;
         private Label connectionCode;
+        private FlowLayoutPanel flowLayoutPanel2;
+        private Button button1;
     }
 }

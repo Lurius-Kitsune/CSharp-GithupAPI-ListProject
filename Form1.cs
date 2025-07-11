@@ -9,6 +9,9 @@ namespace ProjectList
     public partial class Form1 : Form
     {
         GithubApi githubApi;
+        private bool isAuthCancelled = false;
+
+        public bool IsAuthCancelled { get => isAuthCancelled; set => isAuthCancelled = value; }
 
         private Form1()
         {
@@ -20,6 +23,12 @@ namespace ProjectList
         {
             connectionButton.UpdateButtonStyle();
             connectionCode.Text = "";
+            button1.Click += (_sender, _e) =>
+            {
+                isAuthCancelled = true;
+                connectionCode.Text = "Connexion annulée";
+            };
+
             githubApi.OnUserInfoReady += GithubApi_OnUserInfoReady;
             githubApi.OnUserDisconnect += (sender, e) =>
             {
@@ -81,9 +90,11 @@ namespace ProjectList
 
         private void connectionButton_Click(object sender, EventArgs e)
         {
+            isAuthCancelled = false;
             //tabControl1.Enabled = false;
             connectionCode.Text = "Connexion en cours...";
-            tabControl1.Enabled = false;
+            tabPage2.Enabled = false;
+
         }
     }
 }
