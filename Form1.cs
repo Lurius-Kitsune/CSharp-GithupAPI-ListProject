@@ -1,5 +1,6 @@
 using ProjectList.Github;
 using ProjectList.Singleton;
+using ProjectList.Widget.Buttons;
 using System;
 using System.Diagnostics;
 
@@ -17,6 +18,8 @@ namespace ProjectList
 
         private void OnFormLoad(object? _sender, EventArgs _e)
         {
+            connectionButton.UpdateButtonStyle();
+            connectionCode.Text = "";
             githubApi.OnUserInfoReady += GithubApi_OnUserInfoReady;
             githubApi.OnUserDisconnect += (sender, e) =>
             {
@@ -28,6 +31,18 @@ namespace ProjectList
                 {
                     UpdateUserInfoUI(githubApi.UserInfo);
                 }
+            };
+            githubApi.OnDeviceCodeReceived += (_sender, _deviceCode) =>
+            {
+                Invoke(new Action( () => connectionCode.Text = "Code de connexion : " + _deviceCode + ", Veuillez l'écrire sur le navigateur qui c'est ouvert"));
+            };
+            githubApi.OnTokenReceived += (_sender, _token) =>
+            {
+                Invoke(new Action(() => 
+                {
+                    connectionCode.Text = "";
+                    tabControl1.Enabled = true;
+                }));
             };
             UpdateUserInfoUI(githubApi.UserInfo);
         }
@@ -64,5 +79,11 @@ namespace ProjectList
             usernameInfo.Text = _user.UserName == null ? "" : _user.UserName;
         }
 
+        private void connectionButton_Click(object sender, EventArgs e)
+        {
+            //tabControl1.Enabled = false;
+            connectionCode.Text = "Connexion en cours...";
+            tabControl1.Enabled = false;
+        }
     }
 }

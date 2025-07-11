@@ -17,6 +17,7 @@ namespace ProjectList.Singleton
         volatile GithubUser userInfo;
 
         public event EventHandler<string> OnTokenReceived;
+        public event EventHandler<string> OnDeviceCodeReceived;
         public event EventHandler<GithubUser> OnUserInfoReady;
         public event EventHandler OnUserDisconnect;
 
@@ -149,8 +150,7 @@ namespace ProjectList.Singleton
                     throw new UriFormatException("The provided URL is not a valid absolute URI.");
                 }
 
-
-                MessageBox.Show($"Veuillez vous connecter à GitHub en utilisant le code suivant : {Environment.NewLine}{_userCode}{Environment.NewLine}Ensuite, ouvrez l'URL suivante dans votre navigateur : {_verificationUri}", "Connexion GitHub", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                OnDeviceCodeReceived?.Invoke(this, _userCode);
 
                 // Attempt to start the process to open the URL
                 ProcessStartInfo _startInfo = new ProcessStartInfo
@@ -182,7 +182,6 @@ namespace ProjectList.Singleton
                         Console.WriteLine($"Token reçu : {_accessToken}");
                         if (!string.IsNullOrEmpty(_accessToken))
                         {
-                            MessageBox.Show("Connexion réussie !", "Succès", MessageBoxButtons.OK, MessageBoxIcon.Information);
                             // Utiliser le token
                             AccessToken = _accessToken;
                             OnTokenReceived?.Invoke(this, AccessToken);
@@ -193,7 +192,7 @@ namespace ProjectList.Singleton
                     }
                     else if (_tokenContent.TryGetProperty("error", out var _errorProp))
                     {
-                        string _error = _errorProp.GetString();
+                        string? _error = _errorProp.GetString();
 
                          if (_error == "authorization_pending")
                         {

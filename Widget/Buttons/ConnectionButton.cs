@@ -36,7 +36,7 @@ namespace ProjectList.Widget.Buttons
             // Le reste se feras en event
         }
 
-        private void UpdateButtonStyle(object? _sender = null, EventArgs? _args = null)
+        public void UpdateButtonStyle(object? _sender = null, EventArgs? _args = null)
         {
             if (InvokeRequired)
             {
