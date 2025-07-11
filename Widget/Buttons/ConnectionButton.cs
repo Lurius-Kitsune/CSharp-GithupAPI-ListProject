@@ -17,6 +17,7 @@ namespace ProjectList.Widget.Buttons
             isConnected = DataManager.Instance.IsAccessTokenPresent();
             this.Click += ConnectionButton_Click;
             GithubApi.Instance.OnUserDisconnect += UpdateButtonStyle;
+            GithubApi.Instance.OnTokenReceived += (_sender, _toker) => isConnected = true;
             GithubApi.Instance.OnUserInfoReady += (_sender, _user) => UpdateButtonStyle();
 
             UpdateButtonStyle();
@@ -32,7 +33,6 @@ namespace ProjectList.Widget.Buttons
             {
                 GithubApi.Instance.InitOAuthConnexion();
             }
-            isConnected = !isConnected;
             // Le reste se feras en event
         }
 

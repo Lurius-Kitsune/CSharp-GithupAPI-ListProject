@@ -59,12 +59,10 @@ namespace ProjectList
             // 
             connectionButton.Anchor = AnchorStyles.Bottom;
             connectionButton.AutoSize = true;
-            connectionButton.BackColor = Color.Red;
             connectionButton.Location = new Point(675, 117);
             connectionButton.Name = "connectionButton";
             connectionButton.Size = new Size(87, 25);
             connectionButton.TabIndex = 1;
-            connectionButton.Text = "Connecter";
             connectionButton.UseVisualStyleBackColor = false;
             // 
             // pictureBox1

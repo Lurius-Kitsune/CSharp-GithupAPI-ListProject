@@ -86,7 +86,7 @@ namespace ProjectList.Singleton
             if (_data == null || 
                 !_data.ContainsKey("githubApiAccessToken") || 
                 string.IsNullOrEmpty(_data["githubApiAccessToken"]) ||
-                _data["githubApiAccessToken"].Substring(0, 3) != "gho")
+                _data["githubApiAccessToken"].Substring(0, 3) != "ghu")
                 return false;
 
             return true;
