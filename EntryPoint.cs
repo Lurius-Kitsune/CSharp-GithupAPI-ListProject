@@ -17,7 +17,8 @@ namespace ProjectList
                 Env.TraversePath().Load();
                 GithubApi _githubApi = GithubApi.Instance;
                 await _githubApi.InitAsync();
-                Application.Run(new AppMainForm(_githubApi));
+                _githubApi.MyApp = new AppMainForm(_githubApi);
+                Application.Run(_githubApi.MyApp);
             }
             catch (Exception _ex)
             {

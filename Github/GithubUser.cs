@@ -28,10 +28,10 @@ namespace ProjectList.Github
         public Image? AvatarImage => avatarImage;
 
         [JsonIgnore]
-        Vector<Repository> repositories = new Vector<Repository>();
+        Vector<Repository>? repositories = new Vector<Repository>();
 
         [JsonIgnore]
-        public Vector<Repository> Repositories { get => repositories; private set => repositories = value; }
+        public Vector<Repository>? Repositories { get => repositories; private set => repositories = value; }
 
         public GithubUser()
         {
@@ -57,7 +57,7 @@ namespace ProjectList.Github
             }
         }
 
-        public async Task<Vector<Repository>> FetchRepositoriesAsync(string token)
+        public async Task<Vector<Repository>?> FetchRepositoriesAsync(string token)
         {
             if (string.IsNullOrEmpty(UserUrl))
                 return new Vector<Repository>();
