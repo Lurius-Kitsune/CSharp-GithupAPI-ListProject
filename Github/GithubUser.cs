@@ -33,6 +33,8 @@ namespace ProjectList.Github
         [JsonIgnore]
         public Vector<Repository>? Repositories { get => repositories; private set => repositories = value; }
 
+        public event EventHandler OnRepositoriesFetched;
+
         public GithubUser()
         {
             avatarImage = null;
@@ -81,6 +83,7 @@ namespace ProjectList.Github
             if (_repositories != null)
             {
                 Repositories = _repositories;
+                OnRepositoriesFetched?.Invoke(this, EventArgs.Empty);
             }
 
             return Repositories;

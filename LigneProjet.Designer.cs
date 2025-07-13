@@ -36,9 +36,10 @@
             // 
             // dowloadButton
             // 
-            dowloadButton.Location = new Point(464, 116);
+            dowloadButton.AutoSize = true;
+            dowloadButton.Location = new Point(434, 116);
             dowloadButton.Name = "dowloadButton";
-            dowloadButton.Size = new Size(75, 23);
+            dowloadButton.Size = new Size(105, 25);
             dowloadButton.TabIndex = 0;
             dowloadButton.Text = "Clonner le projet";
             dowloadButton.UseVisualStyleBackColor = true;

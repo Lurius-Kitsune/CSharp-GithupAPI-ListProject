@@ -37,14 +37,19 @@ namespace ProjectList
             usernameInfo = new Label();
             tabControl1 = new TabControl();
             tabPage1 = new TabPage();
+            tableLayoutPanel1 = new TableLayoutPanel();
+            tableLayoutPanel2 = new TableLayoutPanel();
             flowLayoutPanel2 = new FlowLayoutPanel();
             cancelAuthButton = new Button();
             connectionCode = new Label();
+            panel1 = new Panel();
             tabPage2 = new TabPage();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
             flowLayoutPanel1.SuspendLayout();
             tabControl1.SuspendLayout();
             tabPage1.SuspendLayout();
+            tableLayoutPanel1.SuspendLayout();
+            tableLayoutPanel2.SuspendLayout();
             flowLayoutPanel2.SuspendLayout();
             SuspendLayout();
             // 
@@ -75,11 +80,12 @@ namespace ProjectList
             // pictureBox1
             // 
             pictureBox1.BackgroundImageLayout = ImageLayout.None;
+            pictureBox1.Dock = DockStyle.Fill;
             pictureBox1.Image = Properties.Resources.image;
             pictureBox1.InitialImage = Properties.Resources.image;
-            pictureBox1.Location = new Point(6, 6);
+            pictureBox1.Location = new Point(3, 3);
             pictureBox1.Name = "pictureBox1";
-            pictureBox1.Size = new Size(139, 139);
+            pictureBox1.Size = new Size(150, 150);
             pictureBox1.SizeMode = PictureBoxSizeMode.StretchImage;
             pictureBox1.TabIndex = 2;
             pictureBox1.TabStop = false;
@@ -90,17 +96,17 @@ namespace ProjectList
             flowLayoutPanel1.AutoSize = true;
             flowLayoutPanel1.Controls.Add(textBox1);
             flowLayoutPanel1.Controls.Add(connectionButton);
-            flowLayoutPanel1.Location = new Point(152, 97);
+            flowLayoutPanel1.Location = new Point(0, 119);
             flowLayoutPanel1.Margin = new Padding(0);
             flowLayoutPanel1.Name = "flowLayoutPanel1";
-            flowLayoutPanel1.Size = new Size(638, 31);
+            flowLayoutPanel1.Size = new Size(410, 31);
             flowLayoutPanel1.TabIndex = 3;
             // 
             // usernameInfo
             // 
             usernameInfo.AutoSize = true;
             usernameInfo.Font = new Font("Comic Sans MS", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            usernameInfo.Location = new Point(148, 6);
+            usernameInfo.Location = new Point(0, 0);
             usernameInfo.Margin = new Padding(0);
             usernameInfo.Name = "usernameInfo";
             usernameInfo.Size = new Size(210, 23);
@@ -116,32 +122,70 @@ namespace ProjectList
             tabControl1.Multiline = true;
             tabControl1.Name = "tabControl1";
             tabControl1.SelectedIndex = 0;
-            tabControl1.Size = new Size(874, 369);
+            tabControl1.Size = new Size(726, 516);
             tabControl1.TabIndex = 4;
             // 
             // tabPage1
             // 
-            tabPage1.Controls.Add(flowLayoutPanel2);
-            tabPage1.Controls.Add(flowLayoutPanel1);
-            tabPage1.Controls.Add(usernameInfo);
-            tabPage1.Controls.Add(pictureBox1);
+            tabPage1.Controls.Add(tableLayoutPanel1);
+            tabPage1.Controls.Add(panel1);
             tabPage1.Location = new Point(4, 24);
             tabPage1.Name = "tabPage1";
             tabPage1.Padding = new Padding(3);
-            tabPage1.Size = new Size(866, 341);
+            tabPage1.Size = new Size(718, 488);
             tabPage1.TabIndex = 0;
             tabPage1.Text = "tabPage1";
             tabPage1.UseVisualStyleBackColor = true;
+            tabPage1.Click += tabPage1_Click;
+            // 
+            // tableLayoutPanel1
+            // 
+            tableLayoutPanel1.AutoSize = true;
+            tableLayoutPanel1.ColumnCount = 2;
+            tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle());
+            tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
+            tableLayoutPanel1.Controls.Add(tableLayoutPanel2, 1, 0);
+            tableLayoutPanel1.Controls.Add(pictureBox1, 0, 0);
+            tableLayoutPanel1.Dock = DockStyle.Fill;
+            tableLayoutPanel1.GrowStyle = TableLayoutPanelGrowStyle.FixedSize;
+            tableLayoutPanel1.Location = new Point(3, 3);
+            tableLayoutPanel1.Name = "tableLayoutPanel1";
+            tableLayoutPanel1.RowCount = 2;
+            tableLayoutPanel1.RowStyles.Add(new RowStyle());
+            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
+            tableLayoutPanel1.Size = new Size(712, 482);
+            tableLayoutPanel1.TabIndex = 6;
+            // 
+            // tableLayoutPanel2
+            // 
+            tableLayoutPanel2.AutoSize = true;
+            tableLayoutPanel2.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+            tableLayoutPanel2.ColumnCount = 1;
+            tableLayoutPanel2.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
+            tableLayoutPanel2.Controls.Add(flowLayoutPanel2, 0, 1);
+            tableLayoutPanel2.Controls.Add(usernameInfo, 0, 0);
+            tableLayoutPanel2.Controls.Add(flowLayoutPanel1, 0, 2);
+            tableLayoutPanel2.Dock = DockStyle.Fill;
+            tableLayoutPanel2.GrowStyle = TableLayoutPanelGrowStyle.FixedSize;
+            tableLayoutPanel2.Location = new Point(159, 3);
+            tableLayoutPanel2.Name = "tableLayoutPanel2";
+            tableLayoutPanel2.RowCount = 3;
+            tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
+            tableLayoutPanel2.RowStyles.Add(new RowStyle());
+            tableLayoutPanel2.RowStyles.Add(new RowStyle());
+            tableLayoutPanel2.Size = new Size(550, 150);
+            tableLayoutPanel2.TabIndex = 7;
+            tableLayoutPanel2.Paint += tableLayoutPanel2_Paint;
             // 
             // flowLayoutPanel2
             // 
             flowLayoutPanel2.AutoSize = true;
             flowLayoutPanel2.Controls.Add(cancelAuthButton);
             flowLayoutPanel2.Controls.Add(connectionCode);
-            flowLayoutPanel2.Location = new Point(152, 66);
+            flowLayoutPanel2.Location = new Point(0, 90);
             flowLayoutPanel2.Margin = new Padding(0);
             flowLayoutPanel2.Name = "flowLayoutPanel2";
-            flowLayoutPanel2.Size = new Size(638, 31);
+            flowLayoutPanel2.Size = new Size(250, 29);
             flowLayoutPanel2.TabIndex = 5;
             // 
             // cancelAuthButton
@@ -165,12 +209,23 @@ namespace ProjectList
             connectionCode.Text = "Code de connexion : ";
             connectionCode.TextAlign = ContentAlignment.TopCenter;
             // 
+            // panel1
+            // 
+            panel1.AutoScroll = true;
+            panel1.AutoSize = true;
+            panel1.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+            panel1.Dock = DockStyle.Top;
+            panel1.Location = new Point(3, 3);
+            panel1.Name = "panel1";
+            panel1.Size = new Size(712, 0);
+            panel1.TabIndex = 7;
+            // 
             // tabPage2
             // 
             tabPage2.Location = new Point(4, 24);
             tabPage2.Name = "tabPage2";
             tabPage2.Padding = new Padding(3);
-            tabPage2.Size = new Size(793, 422);
+            tabPage2.Size = new Size(623, 192);
             tabPage2.TabIndex = 1;
             tabPage2.Text = "tabPage2";
             tabPage2.UseVisualStyleBackColor = true;
@@ -179,7 +234,7 @@ namespace ProjectList
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(874, 369);
+            ClientSize = new Size(726, 516);
             Controls.Add(tabControl1);
             Name = "AppMainForm";
             Text = "Form1";
@@ -189,6 +244,10 @@ namespace ProjectList
             tabControl1.ResumeLayout(false);
             tabPage1.ResumeLayout(false);
             tabPage1.PerformLayout();
+            tableLayoutPanel1.ResumeLayout(false);
+            tableLayoutPanel1.PerformLayout();
+            tableLayoutPanel2.ResumeLayout(false);
+            tableLayoutPanel2.PerformLayout();
             flowLayoutPanel2.ResumeLayout(false);
             flowLayoutPanel2.PerformLayout();
             ResumeLayout(false);
@@ -207,5 +266,8 @@ namespace ProjectList
         private Label connectionCode;
         private FlowLayoutPanel flowLayoutPanel2;
         private Button cancelAuthButton;
+        private TableLayoutPanel tableLayoutPanel1;
+        private TableLayoutPanel tableLayoutPanel2;
+        private Panel panel1;
     }
 }

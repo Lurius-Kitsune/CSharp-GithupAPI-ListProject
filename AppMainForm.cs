@@ -46,11 +46,11 @@ namespace ProjectList
             };
             githubApi.OnDeviceCodeReceived += (_sender, _deviceCode) =>
             {
-                Invoke(new Action( () => connectionCode.Text = "Code de connexion : " + _deviceCode + ", Veuillez l'écrire sur le navigateur qui c'est ouvert"));
+                Invoke(new Action(() => connectionCode.Text = "Code de connexion : " + _deviceCode + ", Veuillez l'écrire sur le navigateur qui c'est ouvert"));
             };
             githubApi.OnTokenReceived += (_sender, _token) =>
             {
-                Invoke(new Action(() => 
+                Invoke(new Action(() =>
                 {
                     connectionCode.Text = "";
                     tabControl1.Enabled = true;
@@ -93,7 +93,7 @@ namespace ProjectList
 
         private void vScrollBar1_Scroll(object sender, ScrollEventArgs e)
         {
-                    }
+        }
         private void connectionButton_Click(object sender, EventArgs e)
         {
             IsAuthCancelled = false;
@@ -101,6 +101,16 @@ namespace ProjectList
             connectionCode.Text = "Connexion en cours...";
             tabPage2.Enabled = false;
             cancelAuthButton.Visible = true;
+        }
+
+        private void tableLayoutPanel2_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+
+        private void tabPage1_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

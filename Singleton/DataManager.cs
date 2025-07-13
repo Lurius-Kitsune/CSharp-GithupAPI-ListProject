@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.Json;
-using System.Threading.Tasks;
+﻿using System.Text.Json;
 
 namespace ProjectList.Singleton
 {
@@ -61,15 +56,15 @@ namespace ProjectList.Singleton
         {
             if (!IsFileExists()) CreateFile();
             // Lire le contenu du fichier JSON
-            string jsonContent = System.IO.File.ReadAllText(jsonFilePath);
+            string jsonContent = File.ReadAllText(jsonFilePath);
             // Désérialiser le JSON en un dictionnaire
-            Dictionary<string, string>? data = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, string>>(jsonContent);
+            Dictionary<string, string>? data = JsonSerializer.Deserialize<Dictionary<string, string>>(jsonContent);
             // Mettre à jour le accessToken
             if (data != null)
             {
                 data["githubApiAccessToken"] = _token;
                 // Sérialiser le dictionnaire en JSON
-                string updatedJsonContent = System.Text.Json.JsonSerializer.Serialize(data);
+                string updatedJsonContent = JsonSerializer.Serialize(data);
                 // Écrire le contenu mis à jour dans le fichier JSON
                 System.IO.File.WriteAllText(jsonFilePath, updatedJsonContent);
             }
@@ -81,10 +76,10 @@ namespace ProjectList.Singleton
 
             string _jsonContent = File.ReadAllText(jsonFilePath);
 
-            Dictionary<string, string>?  _data = JsonSerializer.Deserialize<Dictionary<string, string>>(_jsonContent);
+            Dictionary<string, string>? _data = JsonSerializer.Deserialize<Dictionary<string, string>>(_jsonContent);
 
-            if (_data == null || 
-                !_data.ContainsKey("githubApiAccessToken") || 
+            if (_data == null ||
+                !_data.ContainsKey("githubApiAccessToken") ||
                 string.IsNullOrEmpty(_data["githubApiAccessToken"]) ||
                 _data["githubApiAccessToken"].Substring(0, 3) != "ghu")
                 return false;
