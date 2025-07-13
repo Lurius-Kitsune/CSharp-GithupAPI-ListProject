@@ -23,11 +23,13 @@ namespace ProjectList
         {
             connectionButton.UpdateButtonStyle();
             connectionCode.Text = "";
-            button1.Click += (_sender, _e) =>
+            cancelAuthButton.Click += (_sender, _e) =>
             {
                 isAuthCancelled = true;
                 connectionCode.Text = "Connexion annulée";
+                cancelAuthButton.Visible = false;
             };
+            cancelAuthButton.Visible = false;
 
             githubApi.OnUserInfoReady += GithubApi_OnUserInfoReady;
             githubApi.OnUserDisconnect += (sender, e) =>
@@ -94,7 +96,7 @@ namespace ProjectList
             //tabControl1.Enabled = false;
             connectionCode.Text = "Connexion en cours...";
             tabPage2.Enabled = false;
-
+            cancelAuthButton.Visible = true;
         }
     }
 }

@@ -37,10 +37,10 @@ namespace ProjectList
             usernameInfo = new Label();
             tabControl1 = new TabControl();
             tabPage1 = new TabPage();
+            flowLayoutPanel2 = new FlowLayoutPanel();
+            cancelAuthButton = new Button();
             connectionCode = new Label();
             tabPage2 = new TabPage();
-            flowLayoutPanel2 = new FlowLayoutPanel();
-            button1 = new Button();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
             flowLayoutPanel1.SuspendLayout();
             tabControl1.SuspendLayout();
@@ -132,6 +132,26 @@ namespace ProjectList
             tabPage1.Text = "tabPage1";
             tabPage1.UseVisualStyleBackColor = true;
             // 
+            // flowLayoutPanel2
+            // 
+            flowLayoutPanel2.AutoSize = true;
+            flowLayoutPanel2.Controls.Add(cancelAuthButton);
+            flowLayoutPanel2.Controls.Add(connectionCode);
+            flowLayoutPanel2.Location = new Point(152, 66);
+            flowLayoutPanel2.Margin = new Padding(0);
+            flowLayoutPanel2.Name = "flowLayoutPanel2";
+            flowLayoutPanel2.Size = new Size(638, 31);
+            flowLayoutPanel2.TabIndex = 5;
+            // 
+            // cancelAuthButton
+            // 
+            cancelAuthButton.Location = new Point(3, 3);
+            cancelAuthButton.Name = "cancelAuthButton";
+            cancelAuthButton.Size = new Size(75, 23);
+            cancelAuthButton.TabIndex = 5;
+            cancelAuthButton.Text = "Annuler";
+            cancelAuthButton.UseVisualStyleBackColor = true;
+            // 
             // connectionCode
             // 
             connectionCode.AutoSize = true;
@@ -153,26 +173,6 @@ namespace ProjectList
             tabPage2.TabIndex = 1;
             tabPage2.Text = "tabPage2";
             tabPage2.UseVisualStyleBackColor = true;
-            // 
-            // flowLayoutPanel2
-            // 
-            flowLayoutPanel2.AutoSize = true;
-            flowLayoutPanel2.Controls.Add(button1);
-            flowLayoutPanel2.Controls.Add(connectionCode);
-            flowLayoutPanel2.Location = new Point(152, 66);
-            flowLayoutPanel2.Margin = new Padding(0);
-            flowLayoutPanel2.Name = "flowLayoutPanel2";
-            flowLayoutPanel2.Size = new Size(638, 31);
-            flowLayoutPanel2.TabIndex = 5;
-            // 
-            // button1
-            // 
-            button1.Location = new Point(3, 3);
-            button1.Name = "button1";
-            button1.Size = new Size(75, 23);
-            button1.TabIndex = 5;
-            button1.Text = "button1";
-            button1.UseVisualStyleBackColor = true;
             // 
             // Form1
             // 
@@ -205,6 +205,6 @@ namespace ProjectList
         private TabPage tabPage2;
         private Label connectionCode;
         private FlowLayoutPanel flowLayoutPanel2;
-        private Button button1;
+        private Button cancelAuthButton;
     }
 }
