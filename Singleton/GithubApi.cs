@@ -11,18 +11,18 @@ namespace ProjectList.Singleton
 {
     public class GithubApi
     {
-        string accessToken;
-        string clientId; // Replace with your actual client ID  
-        string clientSecret;
-
-        volatile GithubUser userInfo;
-
         public event EventHandler<string> OnTokenReceived;
+        public event EventHandler<string> OnDeviceCodeReceived;
         public event EventHandler<GithubUser> OnUserInfoReady;
         public event EventHandler OnUserDisconnect;
 
-        static GithubApi? instance;
+        private static GithubApi? instance;
+        private HttpClient client = new HttpClient();
+        private Form1 myApp;
 
+        private string accessToken;
+        private string clientId; 
+        private volatile GithubUser userInfo;
 
         #region Attribute
         public static GithubApi Instance
@@ -36,12 +36,13 @@ namespace ProjectList.Singleton
                 return instance;
             }
         }
-        public string AccessToken { get => string.IsNullOrEmpty(accessToken) ? "Aucun accessToken" : accessToken; private set => accessToken = value; }
+        public string AccessToken { get => string.IsNullOrEmpty(accessToken) ? "Aucun _accessToken" : accessToken; private set => accessToken = value; }
         public bool IsAccessTokenPresent()
         {
             return !string.IsNullOrEmpty(AccessToken);
         }
         public GithubUser UserInfo { get => userInfo; private set => userInfo = value; }
+        public Form1 MyApp { get => myApp; set => myApp = value; }
         #endregion
 
         private GithubApi()
@@ -50,23 +51,22 @@ namespace ProjectList.Singleton
             // Default init delegate
             OnUserInfoReady = (_sender, _user) => { };
             OnUserDisconnect = (_sender, _e) => { };
-            accessToken = DataManager.Instance.GetApiAccessTokenFromData();
-            clientId = Environment.GetEnvironmentVariable("CLIENT_ID")!;
-            clientSecret = Environment.GetEnvironmentVariable("CLIENT_SECRET")!;
-            userInfo = new GithubUser();
-            if (string.IsNullOrEmpty(clientId) || string.IsNullOrEmpty(clientSecret))
-                throw new InvalidOperationException("GitHub client ID or secret is not set. Please set the environment variables CLIENT_ID and CLIENT_SECRET.");
-
-            if (!string.IsNullOrEmpty(AccessToken))
-            {
-                OnTokenReceived?.Invoke(this, AccessToken);
-            }
-
+            OnDeviceCodeReceived = (_sender, _deviceCode) => { };
             OnTokenReceived += (_sender, _token) =>
             {
                 AccessToken = _token;
-                DataManager.                Instance.UpdateGithubApiAccessToken(AccessToken);
+                DataManager.Instance.UpdateGithubApiAccessToken(AccessToken);
             };
+            accessToken = DataManager.Instance.GetApiAccessTokenFromData();
+            clientId = "Iv23li0agB78XVas0WCW";
+            userInfo = new GithubUser();
+            if (string.IsNullOrEmpty(clientId))
+                throw new InvalidOperationException("GitHub client ID or secret is not set. Please set the environment variables CLIENT_ID and CLIENT_SECRET.");
+
+            if (IsAccessTokenPresent())
+                OnTokenReceived?.Invoke(this, AccessToken);
+
+            client.BaseAddress = new Uri("https://github.com/");
 
         }
 
@@ -79,14 +79,13 @@ namespace ProjectList.Singleton
         {
             if (string.IsNullOrEmpty(AccessToken)) return;
 
-            using HttpClient _client = new HttpClient();
-
             // add value to header
-            _client.DefaultRequestHeaders.Add("Accept", "application/vnd.github+json");
-            _client.DefaultRequestHeaders.Add("Authorization", "Bearer " + AccessToken);
-            _client.DefaultRequestHeaders.Add("User-Agent", "ProjectListApp"); // GitHub API requires a User-Agent header
+            client.DefaultRequestHeaders.Clear();
+            client.DefaultRequestHeaders.Add("Accept", "application/vnd.github+json");
+            client.DefaultRequestHeaders.Add("Authorization", "Bearer " + AccessToken);
+            client.DefaultRequestHeaders.Add("User-Agent", "ProjectListApp"); // GitHub API requires a User-Agent header
 
-            HttpResponseMessage _response = await _client.GetAsync("https://api.github.com/user");
+            HttpResponseMessage _response = await client.GetAsync("https://api.github.com/user");
             string _responseString = await _response.Content.ReadAsStringAsync();
 
             // Deserialize the JSON response to a User object
@@ -102,142 +101,135 @@ namespace ProjectList.Singleton
         /// <returns>True if no timeout</returns>
         public void InitOAuthConnexion()
         {
-            // Lancer l’écoute sans bloquer
-            using Task _ = Task.Run(OpenListenerHTTP);
-
-            // Ensuite, ouvrir l'URL GitHub
-            InitializeTokenGit();
-        }
-
-        private void InitializeTokenGit()
-        {
-            try
+            // lancer l'apelle dans un autre thread pour ne pas bloquer l'interface utilisateur
+            Task.Run(async () =>
             {
-                // Oauth URL for GitHub accessToken generation
-                string _authUrl = "https://github.com/login/oauth/authorize?client_id="+clientId+"&scope=repo,user&redirect_uri=http://localhost:8080/callback";
-
-                // Start the process to open the URL
-                if (!Uri.IsWellFormedUriString(_authUrl, UriKind.Absolute))
+                try
                 {
-                    throw new UriFormatException("The provided URL is not a valid absolute URI.");
+                    await InitializeTokenGit();
                 }
-
-                // Attempt to start the process to open the URL
-                ProcessStartInfo _startInfo = new ProcessStartInfo
+                catch (Exception ex)
                 {
-                    FileName = _authUrl,
-                    UseShellExecute = true // Use the default browser to open the URL
-                };
-                Process.Start(_startInfo);
+                    MessageBox.Show($"Erreur lors de l'initialisation de la connexion OAuth : {ex.Message}", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            });
 
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Can't catch token: {ex.Message}", "Initialization Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
         }
 
-        private async void OpenListenerHTTP()
+        private async Task InitializeTokenGit()
         {
-            HttpListener _listener = new HttpListener();
-            _listener.Prefixes.Add("http://localhost:8080/callback/");
-            _listener.Start();
-            HttpListenerContext _context = await _listener.GetContextAsync();
-            HttpListenerRequest _request = _context.Request;
-            HttpListenerResponse _response = _context.Response;
+            // Catch device code  using deviceflow
+            if (string.IsNullOrEmpty(clientId)) throw new InvalidOperationException("GitHub client ID is not set. Please set the environment variable CLIENT_ID.");
 
-            string? _code = _request.QueryString["code"];
-            if (_code == null) throw new InvalidOperationException("Authorization code is missing in the request.");
+            JsonElement _root = await GetDeviceCodeAsync();
 
+            string _deviceCode = _root.GetProperty("device_code").GetString()!;
+            string _userCode = _root.GetProperty("user_code").GetString()!;
+            string _verificationUri = _root.GetProperty("verification_uri").GetString()!;
+            int _expiresIn = _root.GetProperty("expires_in").GetInt32();
+            int _interval = _root.GetProperty("interval").GetInt32();
 
-            string responseString = "<html><body>Authorization accessToken received. You may close this window.</body></html>";
-            byte[] buffer = System.Text.Encoding.UTF8.GetBytes(responseString);
-            _response.ContentLength64 = buffer.Length;
-            await _response.OutputStream.WriteAsync(buffer, 0, buffer.Length);
-            _response.OutputStream.Close();
+            // Start the process to open the URL
+            if (!Uri.IsWellFormedUriString(_verificationUri, UriKind.Absolute))
+                throw new UriFormatException("The provided URL is not a valid absolute URI.");
 
-            _listener.Stop();
-            if (string.IsNullOrEmpty(_code))
+            OnDeviceCodeReceived?.Invoke(this, _userCode);
+                
+
+            // Attempt to start the process to open the URL
+            ProcessStartInfo _startInfo = new ProcessStartInfo
             {
-                throw new InvalidOperationException("Authorization accessToken is missing in the request.");
+                FileName = _verificationUri,
+                UseShellExecute = true // Use the default browser to open the URL
+            };
+            Process.Start(_startInfo);
+
+            string _accessToken = await CatchAccessToken(_interval, _deviceCode);
+            if (!string.IsNullOrEmpty(_accessToken))
+            {
+                AccessToken = _accessToken;
+                OnTokenReceived?.Invoke(this, AccessToken);
+                await CatchUserInfo();
             }
-            OnTokenReceived.Invoke(this, await ExchangeCodeForToken(_code));
-            await CatchUserInfo();
+            else
+            {
+                MessageBox.Show("L'authentification a �chou�e. Veuillez réssayer.", "Erreur d'authentification", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+
         }
 
-        private async Task<string> ExchangeCodeForToken(string _code)
+        private async Task<JsonElement> GetDeviceCodeAsync()
         {
-            using (HttpClient client = new HttpClient())
+            client.DefaultRequestHeaders.Accept.Clear();
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            HttpContent _content = new FormUrlEncodedContent(new[]
             {
-                Dictionary<string, string> _values = new Dictionary<string, string>
+                    new KeyValuePair<string, string>("client_id", clientId),
+                    new KeyValuePair<string, string>("scope", "repo read:user")
+                });
+
+            HttpResponseMessage _response = await client.PostAsync("login/device/code", _content);
+
+            if (!_response.IsSuccessStatusCode) throw new HttpRequestException($"Failed to initiate OAuth connection. Status code: {_response.StatusCode}");
+
+            return JsonDocument.Parse(await _response.Content.ReadAsStringAsync()).RootElement;
+        }
+
+        private async Task<string> CatchAccessToken(int _interval, string _deviceCode)
+        {
+            while (!myApp.IsAuthCancelled)
+            {
+                await Task.Delay(_interval * 1000);
+                var _tokenResponse = await client.PostAsync(
+                "login/oauth/access_token",
+                new FormUrlEncodedContent(new[]
                 {
-                    { "client_id", clientId },
-                    { "client_secret", clientSecret }, // Ne pas commit ceci !!
-                    { "code", _code },
-                    { "redirect_uri", "http://localhost:8080/callback" }
-                };
+                    new KeyValuePair<string, string>("client_id", clientId),
+                    new KeyValuePair<string, string>("device_code", _deviceCode),
+                    new KeyValuePair<string, string>("grant_type", "urn:ietf:params:oauth:grant-type:device_code")
+                }));
 
-                FormUrlEncodedContent _content = new FormUrlEncodedContent(_values);
-                HttpResponseMessage _response = await client.PostAsync("https://github.com/login/oauth/access_token", _content);
-                string _responseString = await _response.Content.ReadAsStringAsync();
+                var _tokenContent = JsonDocument.Parse(await _tokenResponse.Content.ReadAsStringAsync()).RootElement;
 
-                NameValueCollection? _queryParams = HttpUtility.ParseQueryString(_responseString);
+                if (_tokenContent.TryGetProperty("access_token", out var _accessTokenProp))
+                {
+                    string _accessToken = _accessTokenProp.GetString()!;
+                    Console.WriteLine($"Token reçu : {_accessToken}");
+                    if (!string.IsNullOrEmpty(_accessToken))
+                    {
+                        return _accessToken;
+                    }
+                    // OK, on peut utiliser le token
+                }
+                else if (_tokenContent.TryGetProperty("error", out var _errorProp))
+                {
+                    string? _error = _errorProp.GetString();
 
-                string _accessToken = _queryParams["access_token"]!;
-
-                Console.WriteLine("Access accessToken : " + _accessToken);
-                return _accessToken;
+                    if (_error == "authorization_pending")
+                    {
+                        // Continue à attendre
+                        continue;
+                    }
+                    else if (_error == "slow_down")
+                    {
+                        _interval += 5;
+                    }
+                    else
+                    {
+                        MessageBox.Show($"Erreur OAuth : {_error}", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return string.Empty;
+                    }
+                }
             }
+            return string.Empty;
         }
 
         public void DisconnectUser()
         {
-            RevokeToken();
-        }
-
-        private async void RevokeToken()
-        {
-
-            using (HttpClient _client = new HttpClient())
-            {
-                // Corps de la requête
-                object _data = new
-                {
-                    access_token = AccessToken
-                };
-                string _json = JsonSerializer.Serialize(_data);
-
-                string _base64Credentials = Convert.ToBase64String(Encoding.UTF8.GetBytes($"{clientId}:{clientSecret}"));
-                // Set the Authorization header with Basic authentication
-                _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", _base64Credentials);
-                _client.DefaultRequestHeaders.Add("User-Agent", "ProjectListApp");
-
-                StringContent _content = new StringContent(_json, Encoding.UTF8, "application/json");
-                HttpResponseMessage _response = await _client.PostAsync($"https://api.github.com/applications/{clientId}/token", _content);
-
-                if (_response.IsSuccessStatusCode)
-                {
-                    AccessToken = string.Empty;
-                    userInfo = new GithubUser();
-                    DataManager.Instance.UpdateGithubApiAccessToken(AccessToken);
-                    OnUserDisconnect?.Invoke(this, EventArgs.Empty);
-
-                    MessageBox.Show(
-                        "Token successfully revoked. You have been disconnected.",
-                        "Token Revoked",
-                        MessageBoxButtons.OK,
-                        MessageBoxIcon.Information);
-                }
-                else
-                {
-                    string _error = await _response.Content.ReadAsStringAsync();
-                    MessageBox.Show(
-                        "Erreur lors de la révocation du token. Veuillez réessayer. \n Code : " + _error,
-                        "Erreur de révocation",
-                        MessageBoxButtons.OK,
-                        MessageBoxIcon.Error);
-                }
-            }
+            AccessToken = string.Empty;
+            userInfo = new GithubUser();
+            DataManager.Instance.UpdateGithubApiAccessToken(AccessToken);
+            OnUserDisconnect?.Invoke(this, EventArgs.Empty);
         }
         #endregion
     }
