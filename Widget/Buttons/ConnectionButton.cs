@@ -12,6 +12,8 @@ namespace ProjectList.Widget.Buttons
     {
         bool isConnected = false;
 
+        public bool IsConnected { get => isConnected; private set => isConnected = value; }
+
         public ConnectionButton()
         {
 
@@ -28,10 +30,10 @@ namespace ProjectList.Widget.Buttons
 
             this.UseVisualStyleBackColor = false;
             if (LicenseManager.UsageMode == LicenseUsageMode.Designtime) return;
-            isConnected = DataManager.Instance.IsAccessTokenPresent();
+            IsConnected = DataManager.Instance.IsAccessTokenPresent();
             this.Click += ConnectionButton_Click;
             GithubApi.Instance.OnUserDisconnect += UpdateButtonStyle;
-            GithubApi.Instance.OnTokenReceived += (_sender, _toker) => isConnected = true;
+            GithubApi.Instance.OnTokenReceived += (_sender, _toker) => IsConnected = true;
             GithubApi.Instance.OnUserInfoReady += (_sender, _user) => UpdateButtonStyle();
 
             UpdateButtonStyle();
@@ -41,15 +43,15 @@ namespace ProjectList.Widget.Buttons
         private void ConnectionButton_Click(object? _sender, EventArgs _e)
         {
             if(DesignMode) return;
-            if (isConnected)
+            if (IsConnected)
             {
                 GithubApi.Instance.DisconnectUser();
+                IsConnected = DataManager.Instance.IsAccessTokenPresent();
             }
             else
             {
                 GithubApi.Instance.InitOAuthConnexion();
             }
-            // Le reste se feras en event
         }
 
         public void UpdateButtonStyle(object? _sender = null, EventArgs? _args = null)
@@ -61,7 +63,7 @@ namespace ProjectList.Widget.Buttons
                 return;
             }
 
-            if (isConnected)
+            if (IsConnected)
             {
                 this.Text = "Deconnexion";
                 this.BackColor = Color.Green;

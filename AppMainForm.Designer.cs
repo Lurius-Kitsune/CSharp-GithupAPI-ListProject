@@ -44,6 +44,11 @@ namespace ProjectList
             connectionCode = new Label();
             panel1 = new Panel();
             tabPage2 = new TabPage();
+            tableLayoutPanel4 = new TableLayoutPanel();
+            flowLayoutPanel3 = new FlowLayoutPanel();
+            button1 = new Button();
+            projectCountLabel = new Label();
+            tableLayoutPanel3 = new TableLayoutPanel();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
             flowLayoutPanel1.SuspendLayout();
             tabControl1.SuspendLayout();
@@ -51,6 +56,9 @@ namespace ProjectList
             tableLayoutPanel1.SuspendLayout();
             tableLayoutPanel2.SuspendLayout();
             flowLayoutPanel2.SuspendLayout();
+            tabPage2.SuspendLayout();
+            tableLayoutPanel4.SuspendLayout();
+            flowLayoutPanel3.SuspendLayout();
             SuspendLayout();
             // 
             // textBox1
@@ -175,7 +183,6 @@ namespace ProjectList
             tableLayoutPanel2.RowStyles.Add(new RowStyle());
             tableLayoutPanel2.Size = new Size(550, 150);
             tableLayoutPanel2.TabIndex = 7;
-            tableLayoutPanel2.Paint += tableLayoutPanel2_Paint;
             // 
             // flowLayoutPanel2
             // 
@@ -222,13 +229,75 @@ namespace ProjectList
             // 
             // tabPage2
             // 
+            tabPage2.Controls.Add(tableLayoutPanel4);
             tabPage2.Location = new Point(4, 24);
             tabPage2.Name = "tabPage2";
             tabPage2.Padding = new Padding(3);
-            tabPage2.Size = new Size(623, 192);
+            tabPage2.Size = new Size(718, 488);
             tabPage2.TabIndex = 1;
             tabPage2.Text = "tabPage2";
             tabPage2.UseVisualStyleBackColor = true;
+            // 
+            // tableLayoutPanel4
+            // 
+            tableLayoutPanel4.ColumnCount = 1;
+            tableLayoutPanel4.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
+            tableLayoutPanel4.Controls.Add(flowLayoutPanel3, 0, 0);
+            tableLayoutPanel4.Controls.Add(tableLayoutPanel3, 0, 1);
+            tableLayoutPanel4.Dock = DockStyle.Fill;
+            tableLayoutPanel4.Location = new Point(3, 3);
+            tableLayoutPanel4.Name = "tableLayoutPanel4";
+            tableLayoutPanel4.RowCount = 2;
+            tableLayoutPanel4.RowStyles.Add(new RowStyle());
+            tableLayoutPanel4.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
+            tableLayoutPanel4.Size = new Size(712, 482);
+            tableLayoutPanel4.TabIndex = 2;
+            // 
+            // flowLayoutPanel3
+            // 
+            flowLayoutPanel3.AutoSize = true;
+            flowLayoutPanel3.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+            flowLayoutPanel3.Controls.Add(button1);
+            flowLayoutPanel3.Controls.Add(projectCountLabel);
+            flowLayoutPanel3.Dock = DockStyle.Top;
+            flowLayoutPanel3.FlowDirection = FlowDirection.RightToLeft;
+            flowLayoutPanel3.Location = new Point(3, 3);
+            flowLayoutPanel3.Name = "flowLayoutPanel3";
+            flowLayoutPanel3.Size = new Size(706, 29);
+            flowLayoutPanel3.TabIndex = 1;
+            // 
+            // button1
+            // 
+            button1.Location = new Point(628, 3);
+            button1.Name = "button1";
+            button1.Size = new Size(75, 23);
+            button1.TabIndex = 0;
+            button1.Text = "button1";
+            button1.UseVisualStyleBackColor = true;
+            button1.Click += button1_Click;
+            // 
+            // projectCountLabel
+            // 
+            projectCountLabel.AutoSize = true;
+            projectCountLabel.Location = new Point(478, 0);
+            projectCountLabel.Name = "projectCountLabel";
+            projectCountLabel.Size = new Size(144, 15);
+            projectCountLabel.TabIndex = 1;
+            projectCountLabel.Text = "Nombre de repos Github :";
+            // 
+            // tableLayoutPanel3
+            // 
+            tableLayoutPanel3.AutoScroll = true;
+            tableLayoutPanel3.ColumnCount = 1;
+            tableLayoutPanel3.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
+            tableLayoutPanel3.Dock = DockStyle.Fill;
+            tableLayoutPanel3.Location = new Point(3, 38);
+            tableLayoutPanel3.Name = "tableLayoutPanel3";
+            tableLayoutPanel3.RowCount = 1;
+            tableLayoutPanel3.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
+            tableLayoutPanel3.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
+            tableLayoutPanel3.Size = new Size(706, 441);
+            tableLayoutPanel3.TabIndex = 0;
             // 
             // AppMainForm
             // 
@@ -250,6 +319,11 @@ namespace ProjectList
             tableLayoutPanel2.PerformLayout();
             flowLayoutPanel2.ResumeLayout(false);
             flowLayoutPanel2.PerformLayout();
+            tabPage2.ResumeLayout(false);
+            tableLayoutPanel4.ResumeLayout(false);
+            tableLayoutPanel4.PerformLayout();
+            flowLayoutPanel3.ResumeLayout(false);
+            flowLayoutPanel3.PerformLayout();
             ResumeLayout(false);
         }
 
@@ -269,5 +343,10 @@ namespace ProjectList
         private TableLayoutPanel tableLayoutPanel1;
         private TableLayoutPanel tableLayoutPanel2;
         private Panel panel1;
+        private TableLayoutPanel tableLayoutPanel3;
+        private FlowLayoutPanel flowLayoutPanel3;
+        private Button button1;
+        private Label projectCountLabel;
+        private TableLayoutPanel tableLayoutPanel4;
     }
 }

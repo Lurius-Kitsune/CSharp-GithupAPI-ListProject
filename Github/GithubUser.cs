@@ -28,12 +28,12 @@ namespace ProjectList.Github
         public Image? AvatarImage => avatarImage;
 
         [JsonIgnore]
-        Vector<Repository>? repositories = new Vector<Repository>();
+        List<Repository>? repositories = new List<Repository>();
 
         [JsonIgnore]
-        public Vector<Repository>? Repositories { get => repositories; private set => repositories = value; }
+        public List<Repository>? Repositories { get => repositories; private set => repositories = value; }
 
-        public event EventHandler OnRepositoriesFetched;
+        public event EventHandler<List<Repository>> OnRepositoriesFetched;
 
         public GithubUser()
         {
@@ -59,10 +59,10 @@ namespace ProjectList.Github
             }
         }
 
-        public async Task<Vector<Repository>?> FetchRepositoriesAsync(string token)
+        public async Task<List<Repository>?> FetchRepositoriesAsync()
         {
             if (string.IsNullOrEmpty(UserUrl))
-                return new Vector<Repository>();
+                return new List<Repository>();
 
             using HttpClient _client = new HttpClient();
 
@@ -72,18 +72,27 @@ namespace ProjectList.Github
             _client.DefaultRequestHeaders.Add("X-GitHub-Api-Version", "2022-11-28");
             _client.DefaultRequestHeaders.Add("User-Agent", "ProjectListApp");
 
-            HttpResponseMessage _response = await _client.GetAsync($"{UserUrl}/repos");
+            HttpResponseMessage _response = await _client.GetAsync("https://api.github.com/user/repos?per_page=100&type=all");
             if (!_response.IsSuccessStatusCode)
-                return new Vector<Repository>();
+                return new List<Repository>();
 
             string _content = await _response.Content.ReadAsStringAsync();
-
-            Vector<Repository>? _repositories = JsonSerializer.Deserialize<Vector<Repository>>(_content);
+            List<Repository>? _repositories;
+            try
+            {
+                _repositories = JsonSerializer.Deserialize<List<Repository>>(_content);
+            }
+            catch (JsonException _e)
+            {
+                MessageBox.Show($"Error deserializing repositories: {_e.Message}", "Deserialization Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                // Handle deserialization error
+                return new  List<Repository>();
+            }
 
             if (_repositories != null)
             {
                 Repositories = _repositories;
-                OnRepositoriesFetched?.Invoke(this, EventArgs.Empty);
+                OnRepositoriesFetched?.Invoke(this, Repositories);
             }
 
             return Repositories;

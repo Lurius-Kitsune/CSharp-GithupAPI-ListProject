@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ProjectList.Github;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -17,9 +18,13 @@ namespace ProjectList
             InitializeComponent();
         }
 
-        public LigneProjet(string _projectLink)
+        public LigneProjet(Repository _repository)
         {
             InitializeComponent();
+            Dock = DockStyle.Fill;
+            projectNameLabel.Text = _repository.Name;
+            visibilityLabel.Text = _repository.Fork ? "Fork" : "Public";
+
         }
     }
 }

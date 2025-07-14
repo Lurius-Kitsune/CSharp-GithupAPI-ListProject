@@ -31,6 +31,23 @@ namespace ProjectList
                 cancelAuthButton.Visible = false;
             };
             cancelAuthButton.Visible = false;
+            tabControl1.SelectedIndexChanged += (_sender, _e) =>
+            {
+                if (tabControl1.SelectedTab == tabPage2)
+                {
+                    // If the user is not connected, we disable the tab
+                    if (!githubApi.IsAccessTokenPresent())
+                    {
+                        tabControl1.SelectedIndex = 0;
+                        MessageBox.Show("Vous devez être connecté pour accéder à cette page.", "Connexion requise", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    }
+                    else
+                    {
+                        tabPage2.Enabled = true;
+                        RefreshRepositoryList(_sender, _e);
+                    }
+                }
+            };
 
             githubApi.OnUserInfoReady += GithubApi_OnUserInfoReady;
             githubApi.OnUserDisconnect += (sender, e) =>
@@ -54,9 +71,10 @@ namespace ProjectList
                 {
                     connectionCode.Text = "";
                     tabControl1.Enabled = true;
+                    cancelAuthButton.Visible = false;
                 }));
             };
-            UpdateUserInfoUI(githubApi.UserInfo);
+            GithubApi_OnUserInfoReady(this, githubApi.UserInfo);
         }
 
         public AppMainForm(GithubApi _githubApi) : this()
@@ -76,11 +94,12 @@ namespace ProjectList
         {
             if (InvokeRequired)
             {
-                Invoke(new Action(() => UpdateUserInfoUI(_user)));
+                Invoke(new Action(() => GithubApi_OnUserInfoReady(_sender, _user)));
             }
             else
             {
                 UpdateUserInfoUI(_user);
+                githubApi.UserInfo.OnRepositoriesFetched += OnRepositoryFetched;
             }
         }
 
@@ -96,6 +115,7 @@ namespace ProjectList
         }
         private void connectionButton_Click(object sender, EventArgs e)
         {
+            if (connectionButton.IsConnected) return;
             IsAuthCancelled = false;
             //tabControl1.Enabled = false;
             connectionCode.Text = "Connexion en cours...";
@@ -103,14 +123,14 @@ namespace ProjectList
             cancelAuthButton.Visible = true;
         }
 
-        private void tableLayoutPanel2_Paint(object sender, PaintEventArgs e)
+        private void tabPage1_Click(object sender, EventArgs e)
         {
 
         }
 
-        private void tabPage1_Click(object sender, EventArgs e)
+        private void button1_Click(object _sender, EventArgs _e)
         {
-
+            RefreshRepositoryList(_sender, _e);
         }
     }
 }
