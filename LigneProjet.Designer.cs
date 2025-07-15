@@ -43,6 +43,7 @@
             dowloadButton.TabIndex = 0;
             dowloadButton.Text = "Clonner le projet";
             dowloadButton.UseVisualStyleBackColor = true;
+            dowloadButton.Click += dowloadButton_Click;
             // 
             // projectNameLabel
             // 

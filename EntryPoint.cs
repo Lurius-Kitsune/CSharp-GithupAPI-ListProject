@@ -9,16 +9,21 @@ namespace ProjectList
         ///  The main entry point for the application.
         /// </summary>
         [STAThread]
-        static async Task Main()
+        static void Main()
         {
+            //new FolderBrowserDialog().ShowDialog();
             try
             {
                 ApplicationConfiguration.Initialize();
-                Env.TraversePath().Load();
                 GithubApi _githubApi = GithubApi.Instance;
-                await _githubApi.InitAsync();
                 _githubApi.MyApp = new AppMainForm(_githubApi);
+                new AppMainForm(_githubApi);
+                Task.Run(async () =>
+                {
+                    await _githubApi.InitAsync();
+                });
                 Application.Run(_githubApi.MyApp);
+
             }
             catch (Exception _ex)
             {
