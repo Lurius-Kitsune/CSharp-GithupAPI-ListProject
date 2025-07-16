@@ -4,7 +4,7 @@ namespace ProjectList
 {
     partial class AppMainForm : Form
     {
-        private void RefreshRepositoryList(object? _sender, EventArgs _e)
+        private void RefreshRepositoryList(RepositoryFilter _filter)
         {
             if (DesignMode) return;
             tableLayoutPanel3.Controls.Clear();
@@ -12,14 +12,14 @@ namespace ProjectList
             tableLayoutPanel3.RowCount = 0;
             if (InvokeRequired)
             {
-                Invoke(new Action(() => RefreshRepositoryList(_sender, _e)));
+                Invoke(new Action(() => RefreshRepositoryList(_filter)));
                 return;
             }
             Task.Run(async () =>
             {
                 if (githubApi.UserInfo is not null)
                 {
-                    await githubApi.UserInfo.FetchRepositoriesAsync();
+                    await githubApi.UserInfo.FetchRepositoriesAsync(_filter);
                 }
             });
         }

@@ -28,7 +28,9 @@ namespace ProjectList
             InitializeComponent();
             Dock = DockStyle.Fill;
             projectNameLabel.Text = _repository.Name;
-            visibilityLabel.Text = _repository.IsPrivate ? "Private" : _repository.Fork ? "Fork" : "Public";
+            visibilityLabel.Text = _repository.IsPrivate ? "Private" : "Public";
+            visibilityLabel.Text += _repository.Fork ? " (Forked)" : string.Empty;
+            visibilityLabel.Text += _repository.Archived ? " (Archived)" : string.Empty;
             repositoryUrl = _repository.HtmlUrl;
 
         }

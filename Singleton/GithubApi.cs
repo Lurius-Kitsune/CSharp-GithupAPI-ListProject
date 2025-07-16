@@ -5,7 +5,7 @@ using System.Text.Json;
 
 namespace ProjectList.Singleton
 {
-    public class GithubApi
+    class GithubApi
     {
         public event EventHandler<string> OnTokenReceived;
         public event EventHandler<string> OnDeviceCodeReceived;

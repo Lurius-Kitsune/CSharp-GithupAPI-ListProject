@@ -6,7 +6,7 @@ using System.Text.Json.Serialization;
 
 namespace ProjectList.Github
 {
-    public class GithubUser
+    class GithubUser
     {
         [JsonIgnore]
         private Image? avatarImage;
@@ -59,7 +59,7 @@ namespace ProjectList.Github
             }
         }
 
-        public async Task<List<Repository>?> FetchRepositoriesAsync()
+        public async Task<List<Repository>?> FetchRepositoriesAsync(RepositoryFilter _filter)
         {
             if (string.IsNullOrEmpty(UserUrl))
                 return new List<Repository>();
@@ -72,7 +72,7 @@ namespace ProjectList.Github
             _client.DefaultRequestHeaders.Add("X-GitHub-Api-Version", "2022-11-28");
             _client.DefaultRequestHeaders.Add("User-Agent", "ProjectListApp");
 
-            HttpResponseMessage _response = await _client.GetAsync("https://api.github.com/user/repos?per_page=100&type=all");
+            HttpResponseMessage _response = await _client.GetAsync("https://api.github.com/user/repos?per_page=100&" + _filter.ToString());
             if (!_response.IsSuccessStatusCode)
                 return new List<Repository>();
 
@@ -89,9 +89,19 @@ namespace ProjectList.Github
                 return new  List<Repository>();
             }
 
+            List<Repository> _filteredRepository = new List<Repository>();
+
+            foreach (Repository _repo in _repositories)
+            {
+                if (_filter.IsArchived && !_repo.Archived) continue;
+                if (_filter.IsForked && !_repo.Fork) continue;
+                _filteredRepository.Add(_repo);
+
+            }
+
             if (_repositories != null)
             {
-                Repositories = _repositories;
+                Repositories = _filteredRepository;
                 OnRepositoriesFetched?.Invoke(this, Repositories);
             }
 

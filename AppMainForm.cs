@@ -1,12 +1,13 @@
 using ProjectList.Github;
 using ProjectList.Singleton;
 using ProjectList.Widget.Buttons;
+using ProjectList.Widget.Modal;
 using System;
 using System.Diagnostics;
 
 namespace ProjectList
 {
-    public partial class AppMainForm : Form
+    partial class AppMainForm : Form
     {
         GithubApi githubApi;
         private bool isAuthCancelled = false;
@@ -44,7 +45,7 @@ namespace ProjectList
                     else
                     {
                         tabPage2.Enabled = true;
-                        RefreshRepositoryList(_sender, _e);
+                        RefreshRepositoryList(new RepositoryFilter());
                     }
                 }
             };
@@ -130,7 +131,11 @@ namespace ProjectList
 
         private void button1_Click(object _sender, EventArgs _e)
         {
-            RefreshRepositoryList(_sender, _e);
+            //RefreshRepositoryList(_sender, _e);
+            RepositoryFilterModal _modal = new RepositoryFilterModal();
+            _modal.ShowDialog();
+            if (_modal.DialogResult != DialogResult.OK) return;
+            RefreshRepositoryList(_modal.RepositoryFilter);
         }
     }
 }
