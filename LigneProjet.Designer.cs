@@ -37,7 +37,7 @@
             // dowloadButton
             // 
             dowloadButton.AutoSize = true;
-            dowloadButton.Location = new Point(434, 116);
+            dowloadButton.Location = new Point(434, 104);
             dowloadButton.Name = "dowloadButton";
             dowloadButton.Size = new Size(105, 25);
             dowloadButton.TabIndex = 0;
@@ -48,7 +48,7 @@
             // projectNameLabel
             // 
             projectNameLabel.AutoSize = true;
-            projectNameLabel.Location = new Point(48, 36);
+            projectNameLabel.Location = new Point(34, 31);
             projectNameLabel.Name = "projectNameLabel";
             projectNameLabel.Size = new Size(85, 15);
             projectNameLabel.TabIndex = 1;
@@ -56,17 +56,18 @@
             // 
             // openNavigatorButton
             // 
-            openNavigatorButton.Location = new Point(545, 116);
+            openNavigatorButton.Location = new Point(545, 106);
             openNavigatorButton.Name = "openNavigatorButton";
             openNavigatorButton.Size = new Size(75, 23);
             openNavigatorButton.TabIndex = 2;
-            openNavigatorButton.Text = "button2";
+            openNavigatorButton.Text = "Site Web";
             openNavigatorButton.UseVisualStyleBackColor = true;
+            openNavigatorButton.Click += openNavigatorButton_Click;
             // 
             // visibilityLabel
             // 
             visibilityLabel.AutoSize = true;
-            visibilityLabel.Location = new Point(48, 116);
+            visibilityLabel.Location = new Point(34, 104);
             visibilityLabel.Name = "visibilityLabel";
             visibilityLabel.Size = new Size(43, 15);
             visibilityLabel.TabIndex = 3;
@@ -78,12 +79,14 @@
             AutoScaleMode = AutoScaleMode.Font;
             AutoScroll = true;
             AutoSize = true;
+            AutoSizeMode = AutoSizeMode.GrowAndShrink;
+            BorderStyle = BorderStyle.Fixed3D;
             Controls.Add(visibilityLabel);
             Controls.Add(openNavigatorButton);
             Controls.Add(projectNameLabel);
             Controls.Add(dowloadButton);
             Name = "LigneProjet";
-            Size = new Size(634, 150);
+            Size = new Size(623, 132);
             ResumeLayout(false);
             PerformLayout();
         }

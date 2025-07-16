@@ -44,6 +44,14 @@ namespace ProjectList
             GitCloneProcess _gitCloneProcess = new GitCloneProcess(repositoryUrl, _folderPath, projectNameLabel.Text);
         }
 
-        
+        private void openNavigatorButton_Click(object sender, EventArgs e)
+        {
+            ProcessStartInfo _startInfo = new ProcessStartInfo
+            {
+                FileName = repositoryUrl,
+                UseShellExecute = true // Use the default browser to open the URL
+            };
+            Process.Start(_startInfo);
+        }
     }
 }
