@@ -1,11 +1,7 @@
 ﻿using ProjectList.Github;
-using System.Collections.Specialized;
 using System.Diagnostics;
-using System.Net;
 using System.Net.Http.Headers;
-using System.Text;
 using System.Text.Json;
-using System.Web;
 
 namespace ProjectList.Singleton
 {
@@ -21,7 +17,7 @@ namespace ProjectList.Singleton
         private AppMainForm myApp;
 
         private string accessToken;
-        private string clientId; 
+        private string clientId;
         private volatile GithubUser userInfo;
 
         #region Attribute
@@ -138,7 +134,7 @@ namespace ProjectList.Singleton
                 throw new UriFormatException("The provided URL is not a valid absolute URI.");
 
             OnDeviceCodeReceived?.Invoke(this, _userCode);
-                
+
 
             // Attempt to start the process to open the URL
             ProcessStartInfo _startInfo = new ProcessStartInfo
