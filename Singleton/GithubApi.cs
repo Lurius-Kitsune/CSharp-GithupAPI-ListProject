@@ -86,6 +86,11 @@ namespace ProjectList.Singleton
 
             HttpResponseMessage _response = await client.GetAsync("https://api.github.com/user");
             string _responseString = await _response.Content.ReadAsStringAsync();
+            if (!_response.IsSuccessStatusCode)
+            {
+                DisconnectUser();
+                return;
+            }
 
             // Deserialize the JSON response to a User object
             UserInfo = JsonSerializer.Deserialize<GithubUser>(_responseString)!;
