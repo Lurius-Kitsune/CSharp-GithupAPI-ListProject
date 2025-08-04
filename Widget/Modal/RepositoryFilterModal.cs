@@ -37,9 +37,9 @@ namespace ProjectList.Widget.Modal
         private void searchButton_Click(object sender, EventArgs e)
         {
             // update the repository filter properties based on the controls
-            RepositoryFilter.RepositoryType = (RepositoryType)repoVisibilityComboBox.SelectedItem;
-            RepositoryFilter.RepositoryAffiliation = (RepositoryAffiliation)reposAffiliationComboBox.SelectedItem;
-            RepositoryFilter.RepositorySort = (RepositorySort)reposSortComboBox.SelectedItem;
+            RepositoryFilter.RepositoryType = (RepositoryType)repoVisibilityComboBox.SelectedItem!;
+            RepositoryFilter.RepositoryAffiliation = (RepositoryAffiliation)reposAffiliationComboBox.SelectedItem!;
+            RepositoryFilter.RepositorySort = (RepositorySort)reposSortComboBox.SelectedItem!;
             RepositoryFilter.IsArchived = isArchivedCheckbox.Checked;
             RepositoryFilter.IsForked = forkedCheckbox.Checked;
             // close the modal and return the filter
