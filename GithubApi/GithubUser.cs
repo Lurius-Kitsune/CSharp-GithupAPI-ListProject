@@ -8,14 +8,32 @@ namespace ProjectList.Github
 {
     class GithubUser
     {
+        #region Events
+        /// <summary>
+        /// Occurs when the repositories are fetched. <br></br>
+        /// Returns a <see cref="List{T}">List&lt;<see cref="Repository"/>&gt;</see>.
+        /// </summary>
+        public event EventHandler<List<Repository>> OnRepositoriesFetched;
+        #endregion
+
         [JsonIgnore]
         private Image? avatarImage;
+
+        [JsonIgnore]
+        List<Repository>? repositories = new List<Repository>();
+
+        #region Attributs
         [JsonPropertyName("avatar_url")]
         public string? AvatarUrl { get; init; }
         [JsonPropertyName("login")]
         public string? UserName { get; init; }
         [JsonPropertyName("html_url")]
         public string? UserUrl { get; init; }
+        [JsonPropertyName("token")]
+        public string? Token { get; set; }
+
+        [JsonIgnore]
+        public bool IsTokenPresent { get => !string.IsNullOrEmpty(Token); }
 
         [JsonIgnore]
         public int FollowersCount { get; private set; }
@@ -28,12 +46,8 @@ namespace ProjectList.Github
         public Image? AvatarImage => avatarImage;
 
         [JsonIgnore]
-        List<Repository>? repositories = new List<Repository>();
-
-        [JsonIgnore]
         public List<Repository>? Repositories { get => repositories; private set => repositories = value; }
-
-        public event EventHandler<List<Repository>> OnRepositoriesFetched;
+        #endregion
 
         public GithubUser()
         {
@@ -41,14 +55,21 @@ namespace ProjectList.Github
             AvatarUrl = string.Empty;
             UserName = string.Empty;
             UserUrl = string.Empty;
+            Token = string.Empty;
             FollowersCount = 0;
             FollowingCount = 0;
             IsPro = false;
+            repositories = new List<Repository>();
+            OnRepositoriesFetched = delegate { };
         }
 
         // Pas de constructeur JsonConstructor ici
         // Laisse System.Text.Json utiliser le constructeur par défaut
         // et les setters privés
+
+        /// <summary>
+        /// Initializes the avatar image asynchronously from the AvatarUrl.
+        /// </summary>
         public async Task InitAvatarImageAsync()
         {
             if (!string.IsNullOrEmpty(AvatarUrl))
@@ -59,16 +80,22 @@ namespace ProjectList.Github
             }
         }
 
+        /// <summary>
+        /// Fetches the repositories of the user based on the provided filter.
+        /// </summary>
+        /// <param name="_filter">The <see cref="RepositoryFilter"/> to filter the repositories.</param>
+        /// <returns>Returns a <see cref="List{T}">List&lt;<see cref="Repository"/>&gt;</see>.</returns>
         public async Task<List<Repository>?> FetchRepositoriesAsync(RepositoryFilter _filter)
         {
-            if (string.IsNullOrEmpty(UserUrl))
+            Repositories = new List<Repository>();
+            if (string.IsNullOrEmpty(UserUrl) || string.IsNullOrEmpty(Token))
                 return new List<Repository>();
 
             using HttpClient _client = new HttpClient();
 
             _client.DefaultRequestHeaders.Accept.Clear();
             _client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/vnd.github+json"));
-            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", GithubApi.Instance.AccessToken);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Token);
             _client.DefaultRequestHeaders.Add("X-GitHub-Api-Version", "2022-11-28");
             _client.DefaultRequestHeaders.Add("User-Agent", "ProjectListApp");
 
@@ -77,10 +104,22 @@ namespace ProjectList.Github
                 return new List<Repository>();
 
             string _content = await _response.Content.ReadAsStringAsync();
-            List<Repository>? _repositories;
+            List<Repository>? _repositories; 
             try
             {
-                _repositories = JsonSerializer.Deserialize<List<Repository>>(_content);
+                _repositories = JsonSerializer.Deserialize<List<Repository>>(_content) ?? new List<Repository>();
+
+                List<Repository> _filteredRepository = new List<Repository>();
+
+                foreach (Repository _repo in _repositories)
+                {
+                    if (_filter.IsArchived && !_repo.Archived) continue;
+                    if (_filter.IsForked && !_repo.Fork) continue;
+                    Repositories!.Add(_repo);
+                }
+                OnRepositoriesFetched?.Invoke(this, Repositories);
+
+                return Repositories;
             }
             catch (JsonException _e)
             {
@@ -88,24 +127,6 @@ namespace ProjectList.Github
                 // Handle deserialization error
                 return new  List<Repository>();
             }
-
-            List<Repository> _filteredRepository = new List<Repository>();
-
-            foreach (Repository _repo in _repositories)
-            {
-                if (_filter.IsArchived && !_repo.Archived) continue;
-                if (_filter.IsForked && !_repo.Fork) continue;
-                _filteredRepository.Add(_repo);
-
-            }
-
-            if (_repositories != null)
-            {
-                Repositories = _filteredRepository;
-                OnRepositoriesFetched?.Invoke(this, Repositories);
-            }
-
-            return Repositories;
         }
 
     }

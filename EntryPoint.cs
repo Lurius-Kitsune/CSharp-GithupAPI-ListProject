@@ -11,18 +11,16 @@ namespace ProjectList
         [STAThread]
         static void Main()
         {
-            //new FolderBrowserDialog().ShowDialog();
             try
             {
                 ApplicationConfiguration.Initialize();
                 GithubApi _githubApi = GithubApi.Instance;
-                _githubApi.MyApp = new AppMainForm(_githubApi);
-                new AppMainForm(_githubApi);
+                AppMainForm _myApp = new AppMainForm(_githubApi);
                 Task.Run(async () =>
                 {
                     await _githubApi.InitAsync();
                 });
-                Application.Run(_githubApi.MyApp);
+                Application.Run(_myApp);
 
             }
             catch (Exception _ex)

@@ -40,6 +40,9 @@ namespace ProjectList.Github
 
         public RepositoryFilter() { }
 
+        /// <summary>
+        /// </summary>
+        /// <returns>Returns a <see cref="string"/> representing the filter parameters.</returns>"/>
         public override string ToString()
         {
             string _req = string.Empty;

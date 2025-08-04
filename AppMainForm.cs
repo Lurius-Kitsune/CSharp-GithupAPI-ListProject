@@ -37,7 +37,7 @@ namespace ProjectList
                 if (tabControl1.SelectedTab == tabPage2)
                 {
                     // If the user is not connected, we disable the tab
-                    if (!githubApi.IsAccessTokenPresent())
+                    if (!githubApi.UserInfo.IsTokenPresent)
                     {
                         tabControl1.SelectedIndex = 0;
                         MessageBox.Show("Vous devez être connecté pour accéder à cette page.", "Connexion requise", MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -81,14 +81,14 @@ namespace ProjectList
         public AppMainForm(GithubApi _githubApi) : this()
         {
             this.githubApi = _githubApi;
-            if (!DataManager.Instance.IsAccessTokenPresent())
+            if (!GithubApi.Instance.UserInfo.IsTokenPresent)
             {
                 textBox1.Text = "Aucun accessToken";
                 textBox1.ReadOnly = true;
                 return;
             }
 
-            textBox1.Text = _githubApi.AccessToken;
+            textBox1.Text = _githubApi.UserInfo.Token;
         }
 
         private void GithubApi_OnUserInfoReady(object? _sender, GithubUser _user)
@@ -106,7 +106,7 @@ namespace ProjectList
 
         private void UpdateUserInfoUI(GithubUser _user)
         {
-            textBox1.Text = githubApi.AccessToken;
+            textBox1.Text = githubApi.UserInfo.Token;
             pictureBox1.Image = _user.AvatarImage == null ? pictureBox1.InitialImage : _user.AvatarImage;
             usernameInfo.Text = _user.UserName == null ? "" : _user.UserName;
         }

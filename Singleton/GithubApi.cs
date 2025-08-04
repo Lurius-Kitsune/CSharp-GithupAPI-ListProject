@@ -7,20 +7,47 @@ namespace ProjectList.Singleton
 {
     class GithubApi
     {
-        public event EventHandler<string> OnTokenReceived;
-        public event EventHandler<string> OnDeviceCodeReceived;
-        public event EventHandler<GithubUser> OnUserInfoReady;
-        public event EventHandler OnUserDisconnect;
+        #region Events
+        /// <summary>
+        /// Occurs when the access token is received.<br></br>
+        /// The event provides a <see cref="string"/> containing the access token.
+        /// </summary>
+        public event EventHandler<string> OnTokenReceived = delegate { };
 
-        private static GithubApi? instance;
-        private HttpClient client = new HttpClient();
-        private AppMainForm myApp;
+        /// <summary>
+        /// Occurs when the device code is received during the OAuth process.<br></br>
+        /// The event provides a <see cref="string"/> containing the device code.
+        /// </summary>
+        public event EventHandler<string> OnDeviceCodeReceived = delegate { };
 
-        private string accessToken;
-        private string clientId;
-        private volatile GithubUser userInfo;
+        /// <summary>
+        /// Occurs when the user information is ready. <br></br>
+        /// The event provides a <see cref="GithubUser"/> object containing the user information.
+        /// </summary>
+        public event EventHandler<GithubUser> OnUserInfoReady = delegate { };
+
+        /// <summary>
+        /// Occurs when the user disconnects from GitHub.
+        /// </summary>
+        public event EventHandler OnUserDisconnect = delegate { };
+        /// <summary>
+        /// This event is triggered when the user cancels the authentication process.<br></br>
+        /// </summary>
+        public event EventHandler OnUserCancelAuth = delegate { };
+        #endregion
+
+        static GithubApi? instance;
+        HttpClient client = new HttpClient();
+
+        string clientId;
+        GithubUser userInfo;
+        bool isAuthCancelled;
+        JsonDataManager dataManager;
 
         #region Attribute
+        /// <summary>
+        /// The singleton instance of the <see cref="GithubApi"/> class.
+        /// </summary>
         public static GithubApi Instance
         {
             get
@@ -32,34 +59,28 @@ namespace ProjectList.Singleton
                 return instance;
             }
         }
-        public string AccessToken { get => string.IsNullOrEmpty(accessToken) ? "Aucun _accessToken" : accessToken; private set => accessToken = value; }
-        public bool IsAccessTokenPresent()
+        public bool IsAccessTokenPresent
         {
-            return !string.IsNullOrEmpty(AccessToken);
+            get { return !string.IsNullOrEmpty(UserInfo.Token); }
         }
+        /// <summary>
+        /// The <see cref="GithubUser"/> object containing the user information.<br></br>
+        /// </summary>
         public GithubUser UserInfo { get => userInfo; private set => userInfo = value; }
-        public AppMainForm MyApp { get => myApp; set => myApp = value; }
         #endregion
 
         private GithubApi()
         {
-            // Default init delegate
-            OnUserInfoReady = (_sender, _user) => { };
-            OnUserDisconnect = (_sender, _e) => { };
-            OnDeviceCodeReceived = (_sender, _deviceCode) => { };
-            OnTokenReceived += (_sender, _token) =>
-            {
-                AccessToken = _token;
-                DataManager.Instance.UpdateGithubApiAccessToken(AccessToken);
-            };
-            accessToken = DataManager.Instance.GetApiAccessTokenFromData();
+            dataManager = new JsonDataManager("data.json", true);
+            userInfo = dataManager.GetDataAs<GithubUser>() ?? new GithubUser();
+            OnUserCancelAuth = (_sender, _e) => { isAuthCancelled = true; };
             clientId = "Iv23li0agB78XVas0WCW";
-            userInfo = new GithubUser();
+
             if (string.IsNullOrEmpty(clientId))
                 throw new InvalidOperationException("GitHub client ID or secret is not set. Please set the environment variables CLIENT_ID and CLIENT_SECRET.");
 
-            if (IsAccessTokenPresent())
-                OnTokenReceived?.Invoke(this, AccessToken);
+            if (IsAccessTokenPresent)
+                OnTokenReceived?.Invoke(this, UserInfo.Token!);
 
             client.BaseAddress = new Uri("https://github.com/");
 
@@ -67,30 +88,31 @@ namespace ProjectList.Singleton
 
         public async Task InitAsync()
         {
-            await CatchUserInfo();
+            if (UserInfo == null ||!UserInfo.IsTokenPresent) return;
+            await CatchUserInfo(UserInfo.Token!);
         }
 
-        private async Task CatchUserInfo()
+        private async Task CatchUserInfo(string _accessToken)
         {
-            if (string.IsNullOrEmpty(AccessToken)) return;
+            if (string.IsNullOrEmpty(_accessToken)) return;
 
             // add value to header
             client.DefaultRequestHeaders.Clear();
             client.DefaultRequestHeaders.Add("Accept", "application/vnd.github+json");
-            client.DefaultRequestHeaders.Add("Authorization", "Bearer " + AccessToken);
-            client.DefaultRequestHeaders.Add("User-Agent", "ProjectListApp"); // GitHub API requires a User-Agent header
+            client.DefaultRequestHeaders.Add("Authorization", "Bearer " + _accessToken);
+            // GitHub API requires a User-Agent header
+            client.DefaultRequestHeaders.Add("User-Agent", "ProjectListApp");
 
             HttpResponseMessage _response = await client.GetAsync("https://api.github.com/user");
             string _responseString = await _response.Content.ReadAsStringAsync();
             if (!_response.IsSuccessStatusCode)
-            {
-                DisconnectUser();
-                return;
-            }
+                throw new HttpRequestException($"Failed to fetch user info. Status code: {_response.StatusCode}, Response: {_responseString}");
 
             // Deserialize the JSON response to a User object
             UserInfo = JsonSerializer.Deserialize<GithubUser>(_responseString)!;
             if (UserInfo != null) await UserInfo.InitAvatarImageAsync();
+            UserInfo!.Token = _accessToken;
+            dataManager.WriteData(UserInfo);
             OnUserInfoReady.Invoke(this, UserInfo!);
         }
 
@@ -98,7 +120,7 @@ namespace ProjectList.Singleton
         /// <summary>
         /// Initializes the OAuth connection to GitHub to retrieve the access token.
         /// </summary>
-        /// <returns>True if no timeout</returns>
+        /// /// <returns><see cref="bool"/> true if initialization completed before timeout; otherwise, false.</returns>
         public void InitOAuthConnexion()
         {
             // lancer l'apelle dans un autre thread pour ne pas bloquer l'interface utilisateur
@@ -119,10 +141,12 @@ namespace ProjectList.Singleton
         private async Task InitializeTokenGit()
         {
             // Catch device code  using deviceflow
-            if (string.IsNullOrEmpty(clientId)) throw new InvalidOperationException("GitHub client ID is not set. Please set the environment variable CLIENT_ID.");
+            if (string.IsNullOrEmpty(clientId))
+                throw new InvalidOperationException("GitHub client ID is not set or updated please contact the code Owner.");
 
             JsonElement _root = await GetDeviceCodeAsync();
 
+            // TODO convert to a class JSON
             string _deviceCode = _root.GetProperty("device_code").GetString()!;
             string _userCode = _root.GetProperty("user_code").GetString()!;
             string _verificationUri = _root.GetProperty("verification_uri").GetString()!;
@@ -147,12 +171,12 @@ namespace ProjectList.Singleton
             string _accessToken = await CatchAccessToken(_interval, _deviceCode);
             if (!string.IsNullOrEmpty(_accessToken))
             {
-                AccessToken = _accessToken;
-                OnTokenReceived?.Invoke(this, AccessToken);
-                await CatchUserInfo();
+                OnTokenReceived?.Invoke(this, _accessToken);
+                await CatchUserInfo(_accessToken);
             }
             else
             {
+                // TODO :  DO NOT use MessageBox in a library, use an event instead
                 MessageBox.Show("L'authentification a �chou�e. Veuillez réssayer.", "Erreur d'authentification", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
@@ -164,20 +188,21 @@ namespace ProjectList.Singleton
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             HttpContent _content = new FormUrlEncodedContent(new[]
             {
-                    new KeyValuePair<string, string>("client_id", clientId),
-                    new KeyValuePair<string, string>("scope", "repo read:user")
-                });
+                new KeyValuePair<string, string>("client_id", clientId),
+                new KeyValuePair<string, string>("scope", "repo read:user")
+            });
 
             HttpResponseMessage _response = await client.PostAsync("login/device/code", _content);
 
-            if (!_response.IsSuccessStatusCode) throw new HttpRequestException($"Failed to initiate OAuth connection. Status code: {_response.StatusCode}");
+            if (!_response.IsSuccessStatusCode)
+                throw new HttpRequestException($"Failed to initiate OAuth connection. Status code: {_response.StatusCode}");
 
             return JsonDocument.Parse(await _response.Content.ReadAsStringAsync()).RootElement;
         }
 
         private async Task<string> CatchAccessToken(int _interval, string _deviceCode)
         {
-            while (!myApp.IsAuthCancelled)
+            while (!isAuthCancelled)
             {
                 await Task.Delay(_interval * 1000);
                 var _tokenResponse = await client.PostAsync(
@@ -189,7 +214,8 @@ namespace ProjectList.Singleton
                     new KeyValuePair<string, string>("grant_type", "urn:ietf:params:oauth:grant-type:device_code")
                 }));
 
-                var _tokenContent = JsonDocument.Parse(await _tokenResponse.Content.ReadAsStringAsync()).RootElement;
+                //Todo converte to a class JSON
+                JsonElement _tokenContent = JsonDocument.Parse(await _tokenResponse.Content.ReadAsStringAsync()).RootElement;
 
                 if (_tokenContent.TryGetProperty("access_token", out var _accessTokenProp))
                 {
@@ -221,14 +247,17 @@ namespace ProjectList.Singleton
                     }
                 }
             }
+            isAuthCancelled = false; // Reset the cancellation flag
             return string.Empty;
         }
 
+        /// <summary>
+        /// Disconnects the user from GitHub by clearing the access token and user information.<br></br>
+        /// </summary>
         public void DisconnectUser()
         {
-            AccessToken = string.Empty;
             userInfo = new GithubUser();
-            DataManager.Instance.UpdateGithubApiAccessToken(AccessToken);
+            dataManager.WriteData(userInfo);
             OnUserDisconnect?.Invoke(this, EventArgs.Empty);
         }
         #endregion

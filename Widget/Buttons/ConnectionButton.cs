@@ -30,7 +30,7 @@ namespace ProjectList.Widget.Buttons
 
             this.UseVisualStyleBackColor = false;
             if (LicenseManager.UsageMode == LicenseUsageMode.Designtime) return;
-            IsConnected = DataManager.Instance.IsAccessTokenPresent();
+            IsConnected = GithubApi.Instance.UserInfo.IsTokenPresent;
             this.Click += ConnectionButton_Click;
             GithubApi.Instance.OnUserDisconnect += UpdateButtonStyle;
             GithubApi.Instance.OnTokenReceived += (_sender, _toker) => IsConnected = true;
@@ -46,7 +46,7 @@ namespace ProjectList.Widget.Buttons
             if (IsConnected)
             {
                 GithubApi.Instance.DisconnectUser();
-                IsConnected = DataManager.Instance.IsAccessTokenPresent();
+                IsConnected = GithubApi.Instance.UserInfo.IsTokenPresent;
             }
             else
             {
