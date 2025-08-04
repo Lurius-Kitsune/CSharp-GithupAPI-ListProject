@@ -1,5 +1,6 @@
 using ProjectList.Singleton;
 using DotNetEnv;
+using System.Diagnostics;
 namespace ProjectList
 {
     internal static class EntryPoint
@@ -8,14 +9,32 @@ namespace ProjectList
         ///  The main entry point for the application.
         /// </summary>
         [STAThread]
-        static async Task Main()
+        static void Main()
         {
-            ApplicationConfiguration.Initialize();
-            Env.TraversePath().Load();
-            GithubApi _githubApi = GithubApi.Instance;
-            await _githubApi.InitAsync();
-            _githubApi.MyApp = new Form1(_githubApi);
-            Application.Run(_githubApi.MyApp);
+            try
+            {
+                ApplicationConfiguration.Initialize();
+                GithubApi _githubApi = GithubApi.Instance;
+                AppMainForm _myApp = new AppMainForm(_githubApi);
+                Task.Run(async () =>
+                {
+                    await _githubApi.InitAsync();
+                });
+                Application.Run(_myApp);
+
+            }
+            catch (Exception _ex)
+            {
+                // Handle exceptions, log them or show a message box
+                MessageBox.Show($"An error occurred: {_ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                // Log it in a file with a timestamp
+                string _logFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "error_log.txt");
+                using (StreamWriter _writer = new StreamWriter(_logFilePath, true))
+                {
+                    _writer.WriteLine($"[{DateTime.Now}] {_ex.Message}");
+                    _writer.WriteLine(_ex.StackTrace);
+                }
+            }
         }
     }
 }
