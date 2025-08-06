@@ -364,3 +364,4 @@ FodyWeavers.xsd
 /.env
 /certif.pfx
 /decript.txt
+/data.json

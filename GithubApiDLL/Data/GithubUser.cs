@@ -1,12 +1,13 @@
-﻿using ProjectList.Singleton;
+﻿using GithubApiDLL;
+using GithubApiDLL.Tools;
 using System.Net.Http.Headers;
 using System.Numerics;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace ProjectList.Github
+namespace GithubApiDLL.Data
 {
-    class GithubUser
+    public class GithubUser
     {
         #region Events
         /// <summary>
@@ -17,7 +18,7 @@ namespace ProjectList.Github
         #endregion
 
         [JsonIgnore]
-        private Image? avatarImage;
+        private Stream? avatarImage;
 
         [JsonIgnore]
         List<Repository>? repositories = new List<Repository>();
@@ -43,7 +44,7 @@ namespace ProjectList.Github
         public bool IsPro { get; private set; }
 
         [JsonIgnore]
-        public Image? AvatarImage => avatarImage;
+        public Stream? AvatarImage => avatarImage;
 
         [JsonIgnore]
         public List<Repository>? Repositories { get => repositories; private set => repositories = value; }
@@ -74,9 +75,8 @@ namespace ProjectList.Github
         {
             if (!string.IsNullOrEmpty(AvatarUrl))
             {
-                using var client = new HttpClient();
-                using var stream = await client.GetStreamAsync(AvatarUrl);
-                avatarImage = Image.FromStream(stream);
+                using HttpClient client = new HttpClient();
+                avatarImage = await client.GetStreamAsync(AvatarUrl);
             }
         }
 
@@ -123,7 +123,7 @@ namespace ProjectList.Github
             }
             catch (JsonException _e)
             {
-                MessageBox.Show($"Error deserializing repositories: {_e.Message}", "Deserialization Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                //MessageBox.Show($"Error deserializing repositories: {_e.Message}", "Deserialization Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 // Handle deserialization error
                 return new  List<Repository>();
             }

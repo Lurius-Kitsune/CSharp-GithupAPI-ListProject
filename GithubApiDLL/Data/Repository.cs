@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace ProjectList.Github
+namespace GithubApiDLL.Data
 {
     public class Repository
     {

@@ -4,32 +4,32 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-enum RepositoryType
+namespace GithubApiDLL.Data
 {
-    Public,
-    Private,
-    All,
-}
+    public enum RepositoryType
+    {
+        Public,
+        Private,
+        All,
+    }
 
-enum RepositoryAffiliation
-{
-    Owner,
-    Collaborator,
-    OrganizationMember,
-    All,
-}
+    public enum RepositoryAffiliation
+    {
+        Owner,
+        Collaborator,
+        OrganizationMember,
+        All,
+    }
 
-enum RepositorySort
-{
-    Created,
-    Updated,
-    Pushed,
-    FullName,
-}
+    public enum RepositorySort
+    {
+        Created,
+        Updated,
+        Pushed,
+        FullName,
+    }
 
-namespace ProjectList.Github
-{
-    class RepositoryFilter
+    public class RepositoryFilter
     {
 
         public RepositoryType RepositoryType { get; set; } = RepositoryType.All;

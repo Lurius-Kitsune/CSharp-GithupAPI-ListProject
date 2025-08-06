@@ -1,9 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.13.35931.197 d17.13
+VisualStudioVersion = 17.13.35931.197
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProjectList", "ProjectList.csproj", "{F493D592-5E41-411F-88A1-C0AC2E884664}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GithubApiDLL", "GithubApiDLL\GithubApiDLL.csproj", "{F7A8A730-6149-89B1-2AE8-34771C6FF4B8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProjectListApp", "ProjectListApp\ProjectListApp.csproj", "{58B979A9-0EA2-4CDF-AD69-0F924A736DEA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +19,14 @@ Global
 		{F493D592-5E41-411F-88A1-C0AC2E884664}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F493D592-5E41-411F-88A1-C0AC2E884664}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F493D592-5E41-411F-88A1-C0AC2E884664}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F7A8A730-6149-89B1-2AE8-34771C6FF4B8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F7A8A730-6149-89B1-2AE8-34771C6FF4B8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F7A8A730-6149-89B1-2AE8-34771C6FF4B8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F7A8A730-6149-89B1-2AE8-34771C6FF4B8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{58B979A9-0EA2-4CDF-AD69-0F924A736DEA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{58B979A9-0EA2-4CDF-AD69-0F924A736DEA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{58B979A9-0EA2-4CDF-AD69-0F924A736DEA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{58B979A9-0EA2-4CDF-AD69-0F924A736DEA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

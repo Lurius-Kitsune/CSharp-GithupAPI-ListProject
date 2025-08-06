@@ -1,0 +1,24 @@
+﻿<Window
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ProjectListApp"
+        xmlns:views="clr-namespace:ProjectListApp.Views"
+        xmlns:conv="clr-namespace:ProjectListApp.Converters"
+        x:Name="window" x:Class="ProjectListApp.MainWindow"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800" ShowActivated="False">
+
+    <Window.Resources>
+        <conv:StreamToImageConverter x:Key="StreamToImageConverter" />
+    </Window.Resources>
+    <Window.DataContext>
+        <local:GithubUserViewModel />
+    </Window.DataContext>
+    <Grid>
+        <views:UserConnexion VerticalAlignment="Top" Margin="0,-1,0,0"/>
+        <ToolBarPanel/>
+
+    </Grid>
+</Window>
