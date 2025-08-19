@@ -15,9 +15,15 @@ namespace ProjectListApp.ViewModels
 
         public VMUserConnexion()
         {
-            GithubApi.Instance.OnUserInfoReady += (sender, e) =>
+            GithubApi _githubApi = GithubApi.Instance;
+            _githubApi.OnUserInfoReady += (sender, e) =>
             {
                 GithubUser = e;
+            };
+
+            _githubApi.OnUserDisconnect += (sender, e) =>
+            {
+                GithubUser = new GithubUser();
             };
 
         }

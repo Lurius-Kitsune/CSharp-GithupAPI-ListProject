@@ -17,8 +17,16 @@
         <local:GithubUserViewModel />
     </Window.DataContext>
     <Grid>
-        <views:UserConnexion VerticalAlignment="Top" Margin="0,-1,0,0"/>
-        <ToolBarPanel/>
+        <TabControl>
+            <TabItem Header="Account">
+                <Grid Background="White">
+                    <views:UserConnexion VerticalAlignment="Top" Margin="0,-1,0,0"/>
+                </Grid>
+            </TabItem>
+            <TabItem x:Name="ProjectListTab" Header="Project" IsEnabled="False">
+                <Grid Background="White"/>
+            </TabItem>
+        </TabControl>
 
     </Grid>
 </Window>

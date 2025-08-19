@@ -76,7 +76,7 @@ namespace ProjectListApp.Views
             Dispatcher.Invoke(() =>
             {
                 DeviceCodeLabel.Content = _deviceCode;
-                DeviceCodeLabel.Visibility = Visibility.Visible;
+                DeviceCodeGrid.Visibility = Visibility.Visible;
             });
         }
 
@@ -84,9 +84,13 @@ namespace ProjectListApp.Views
         {
             Dispatcher.Invoke(() =>
             {
-                DeviceCodeLabel.Visibility = Visibility.Collapsed;
+                DeviceCodeGrid.Visibility = Visibility.Collapsed;
             });
         }
 
+        private void CancelButtonCLick(object sender, RoutedEventArgs e)
+        {
+            githubApi.CancelAuth();
+        }
     }
 }

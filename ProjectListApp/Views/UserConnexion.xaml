@@ -4,7 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:ProjectListApp.Views"
-             xmlns:Data="clr-namespace:GithubApiDLL.Data;assembly=GithubApiDLL" xmlns:Converters="clr-namespace:ProjectListApp.Converters" xmlns:ViewModels="clr-namespace:ProjectListApp.ViewModels" x:Class="ProjectListApp.Views.UserConnexion"
+             xmlns:Data="clr-namespace:GithubApiDLL.Data;assembly=GithubApiDLL" xmlns:Converters="clr-namespace:ProjectListApp.Converters" xmlns:ViewModels="clr-namespace:ProjectListApp.ViewModels" xmlns:Components="clr-namespace:ProjectListApp.Components" x:Class="ProjectListApp.Views.UserConnexion"
              mc:Ignorable="d" Height="100" Width="770">
     <UserControl.Resources>
         <Converters:StreamToImageConverter x:Key="StreamToImageConverter"/>
@@ -44,19 +44,29 @@
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
-                
+
                 <Label HorizontalAlignment="Center" Content="Username :" VerticalAlignment="Center"/>
-                <Label x:Name="username" Grid.Column="1" Content="{Binding GithubUser.UserName}" VerticalAlignment="Center"/>
+                <Label x:Name="ProjectListTab" Grid.Column="1" Content="{Binding GithubUser.UserName}" VerticalAlignment="Center"/>
             </Grid>
-            
-            <Grid Grid.Row="1" VerticalAlignment="Bottom" Height="46">
+
+            <Grid Grid.Row="1" VerticalAlignment="Bottom">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
-                <Label x:Name="DeviceCodeLabel" Content="Label" Grid.Row
-                       ="0" Visibility="Collapsed"/>
-                <Grid Grid.Row="1" VerticalAlignment="Bottom">
+
+                <Grid x:Name="DeviceCodeGrid" Grid.Row="0" VerticalAlignment="Top" Margin="0,0,0,10" Visibility="Collapsed">
+
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <Label x:Name="DeviceCodeLabel" Content="Label" Grid.Row="0"/>
+                    <Button Grid.Column="1" Content="Annuler" VerticalAlignment="Center" Margin="5,0,0,0" FontWeight="Bold" Padding="5,1,5,1" FontSize="10" Click="CancelButtonCLick"/>
+                </Grid>
+
+                <Grid Grid.Row="1" VerticalAlignment="Top">
 
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto" />
@@ -65,6 +75,7 @@
 
                     <TextBox HorizontalAlignment="Left" TextWrapping="Wrap" Text="{Binding GithubUser.Token}" VerticalAlignment="Center" Grid.IsSharedSizeScope="True" Width="300"/>
                     <Button Content="Button" VerticalAlignment="Center" Click="Button_Click" Grid.Column="1" Margin="10,0,0,0"/>
+                    <Components:ConnexionButton Grid.Column="1" VerticalAlignment="Center" Margin="10,0,0,0"/>
                 </Grid>
             </Grid>
         </Grid>

@@ -250,7 +250,6 @@ namespace GithubApiDLL
                     }
                     else
                     {
-                        //MessageBox.Show($"Erreur OAuth : {_error}", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         return string.Empty;
                     }
                 }
@@ -268,6 +267,15 @@ namespace GithubApiDLL
             dataManager.WriteData(userInfo);
             OnUserDisconnect?.Invoke(this, EventArgs.Empty);
         }
+
+        /// <summary>
+        /// Cancels the authentication process.<br></br>
+        /// </summary>
+        public void CancelAuth()
+        {
+            OnUserCancelAuth?.Invoke(this, EventArgs.Empty);
+        }
+
         #endregion
     }
 }

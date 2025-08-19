@@ -1,7 +1,4 @@
-﻿using GithubApiDLL;
-using GithubApiDLL.Tools;
-using System.Net.Http.Headers;
-using System.Numerics;
+﻿using System.Net.Http.Headers;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -104,7 +101,7 @@ namespace GithubApiDLL.Data
                 return new List<Repository>();
 
             string _content = await _response.Content.ReadAsStringAsync();
-            List<Repository>? _repositories; 
+            List<Repository>? _repositories;
             try
             {
                 _repositories = JsonSerializer.Deserialize<List<Repository>>(_content) ?? new List<Repository>();
@@ -125,7 +122,7 @@ namespace GithubApiDLL.Data
             {
                 //MessageBox.Show($"Error deserializing repositories: {_e.Message}", "Deserialization Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 // Handle deserialization error
-                return new  List<Repository>();
+                return new List<Repository>();
             }
         }
 

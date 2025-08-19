@@ -20,7 +20,37 @@ namespace ProjectListApp
 
         public MainWindow()
         {
+            Init();
             InitializeComponent();
+            ToogleProjectListTab(GithubApi.Instance.UserInfo.IsTokenPresent);
+        }
+
+        private void Init()
+        {
+            GithubApi _githubApi = GithubApi.Instance;
+            _githubApi.OnUserDisconnect += (_sender, _e) =>
+            {
+                Dispatcher.Invoke(() =>
+                {
+                    ToogleProjectListTab(false);
+                });
+            };
+
+            _githubApi.OnUserInfoReady += (_sender, _e) =>
+            {
+                Dispatcher.Invoke(() =>
+                {
+                    ToogleProjectListTab(true);
+                });
+            };
+
+            
+
+        }
+
+        private void ToogleProjectListTab(bool _isVisible)
+        {
+            ProjectListTab.IsEnabled = _isVisible;
         }
     }
 }
